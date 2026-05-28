@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#243c2f">
+    <title>Рабочее время DK</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icons/icon-192.svg">
+    <link rel="stylesheet" href="styles.css?v=9">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" data-i18n="appKicker">Denmark work tracker</p>
+          <h1 data-i18n="appTitle">Рабочее время</h1>
+        </div>
+        <div class="top-actions">
+          <label class="language-picker">
+            <span data-i18n="language">Язык</span>
+            <select id="languageSelect" aria-label="Language">
+              <option value="ru">Русский</option>
+              <option value="en">English</option>
+              <option value="da">Dansk</option>
+            </select>
+          </label>
+          <button class="text-button admin-toggle" id="adminToggle" type="button" data-i18n="admin">Админка</button>
+          <button class="icon-button" id="installButton" type="button" hidden aria-label="Установить приложение" title="Установить">
+            <span aria-hidden="true">↓</span>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="summary-grid" aria-label="Итоги всех сохранённых смен" data-i18n-aria-label="monthSummary">
+          <article>
+            <span data-i18n="hours">Часы</span>
+            <strong id="totalHours">0 ч</strong>
+          </article>
+          <article>
+            <span data-i18n="gross">Брутто</span>
+            <strong id="grossPay">0 kr</strong>
+          </article>
+          <article>
+            <span data-i18n="feriepenge">Feriepenge</span>
+            <strong id="holidayPay">0 kr</strong>
+          </article>
+          <article>
+            <span data-i18n="afterDeductions">После удержаний</span>
+            <strong id="netPay">0 kr</strong>
+          </article>
+        </section>
+
+        <section class="workspace">
+          <div class="calendar-panel">
+            <div class="month-toolbar">
+              <button class="icon-button" id="prevMonth" type="button" aria-label="Предыдущий месяц" title="Предыдущий месяц" data-i18n-aria-label="prevMonth" data-i18n-title="prevMonth">‹</button>
+              <h2 id="monthTitle">Месяц</h2>
+              <button class="icon-button" id="nextMonth" type="button" aria-label="Следующий месяц" title="Следующий месяц" data-i18n-aria-label="nextMonth" data-i18n-title="nextMonth">›</button>
+            </div>
+            <div class="weekday-row" aria-hidden="true">
+              <span data-weekday="0">Пн</span><span data-weekday="1">Вт</span><span data-weekday="2">Ср</span><span data-weekday="3">Чт</span><span data-weekday="4">Пт</span><span data-weekday="5">Сб</span><span data-weekday="6">Вс</span>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+          </div>
+
+          <form class="shift-form" id="shiftForm">
+            <div class="form-head">
+              <div>
+                <p class="eyebrow" data-i18n="shift">Смена</p>
+                <h2 id="selectedDateTitle">Сегодня</h2>
+              </div>
+              <button class="text-button danger" id="deleteShift" type="button">Удалить</button>
+            </div>
+
+            <label>
+              <span data-i18n="date">Дата</span>
+              <input id="shiftDate" type="date" required>
+            </label>
+
+            <label>
+              <span data-i18n="dayType">Тип дня</span>
+              <select id="dayType">
+                <option value="work" data-i18n="worked">Работал</option>
+                <option value="sick" data-i18n="sick">Болен</option>
+              </select>
+            </label>
+
+            <div class="time-row">
+              <label>
+                <span data-i18n="start">Начало</span>
+                <input id="startTime" type="time" value="06:00" required>
+              </label>
+              <label>
+                <span data-i18n="end">Конец</span>
+                <input id="endTime" type="time" value="14:00" required>
+              </label>
+            </div>
+
+            <div class="time-row">
+              <label>
+                <span data-i18n="breakMinutes">Перерыв, мин</span>
+                <input id="breakMinutes" type="number" min="0" step="5" value="0">
+              </label>
+              <label>
+                <span data-i18n="hourlyRate">Ставка, kr/час</span>
+                <input id="hourlyRate" type="number" min="0" step="0.01" inputmode="decimal" placeholder="например 160" data-i18n-placeholder="ratePlaceholder">
+              </label>
+            </div>
+
+            <fieldset>
+              <legend data-i18n="addons">Доплаты</legend>
+              <label class="checkline"><input id="eveningAddon" type="checkbox"> <span data-i18n="evening">Вечерняя</span></label>
+              <label class="checkline"><input id="nightAddon" type="checkbox"> <span data-i18n="night">Ночная</span></label>
+              <label class="checkline"><input id="weekendAddon" type="checkbox"> <span data-i18n="weekend">Выходной</span></label>
+              <label class="checkline"><input id="overtimeAddon" type="checkbox"> <span data-i18n="overtime">Overtime</span></label>
+              <label class="checkline"><input id="localAddon" type="checkbox"> <span data-i18n="localAddon">Lokal-/особая надбавка</span></label>
+              <div class="custom-addons" id="customAddonsContainer"></div>
+            </fieldset>
+
+            <label>
+              <span data-i18n="note">Заметка</span>
+              <input id="note" type="text" maxlength="80" placeholder="место, отель, отдел, комментарий" data-i18n-placeholder="notePlaceholder">
+            </label>
+
+            <div class="shift-result">
+              <span id="shiftHours">0 ч</span>
+              <strong id="shiftPay">0 kr</strong>
+            </div>
+            <p class="save-status" id="saveStatus">Не сохранено</p>
+
+            <button class="primary-button" type="submit" data-i18n="saveShift">Сохранить смену</button>
+          </form>
+        </section>
+
+        <section class="saved-total-panel" aria-label="Сумма по сохранённым сменам" data-i18n-aria-label="savedTotals">
+          <h2 data-i18n="savedMonth">Все сохранённые смены</h2>
+          <p><span data-i18n="savedCount">Сохранено смен</span>: <strong id="savedShiftCount">0</strong></p>
+          <p><span data-i18n="beforeTax">До налога</span>: <strong id="savedGrossText">0 kr</strong></p>
+          <p><span data-i18n="takeHome">На руку</span>: <strong id="savedNetText">0 kr</strong></p>
+          <p class="hint" data-i18n="savedPersistenceHint">Смены сохраняются после закрытия и остаются здесь, пока вы не удалите их или не создадите зарплатный лист.</p>
+          <button class="text-button refresh-button" id="refreshTotalsButton" type="button" data-i18n="refreshTotals">Обновить итоги</button>
+          <p class="debug-line" id="debugLine">v8</p>
+          <div class="saved-shift-list" id="savedShiftList"></div>
+        </section>
+
+        <section class="payroll-panel">
+          <div class="payroll-head">
+            <div>
+              <p class="eyebrow" data-i18n="payrollKicker">Lønseddel</p>
+              <h2 data-i18n="payrollTitle">Зарплатный лист</h2>
+            </div>
+          </div>
+          <div class="payroll-controls">
+            <label>
+              <span data-i18n="fromDate">С даты</span>
+              <input id="payFromDate" type="date">
+            </label>
+            <label>
+              <span data-i18n="toDate">По дату</span>
+              <input id="payToDate" type="date">
+            </label>
+            <button class="primary-button compact" id="createPaySlipButton" type="button" data-i18n="createPaySlip">Создать зарплатный лист</button>
+            <button class="text-button import-button" id="importPaySlipButton" type="button" data-i18n="loadPaySlip">Загрузить</button>
+            <input id="paySlipFileInput" type="file" accept="application/json,.json" hidden>
+          </div>
+          <p class="hint" id="payrollStatus" data-i18n="payrollHint">Выберите период, когда получили зарплату. Смены из периода перейдут в историю.</p>
+          <div class="pay-slip-list" id="paySlipList"></div>
+        </section>
+
+        <section class="admin-panel" id="adminPanel" hidden>
+          <div class="admin-head">
+            <div>
+              <p class="eyebrow" data-i18n="adminKicker">Admin</p>
+              <h2 data-i18n="adminTitle">Админка расчёта</h2>
+            </div>
+            <button class="text-button" id="adminClose" type="button" data-i18n="exitAdmin">Выйти</button>
+          </div>
+
+          <div class="admin-grid">
+            <div class="admin-box">
+              <h3 data-i18n="customAddonsTitle">Свои доплаты</h3>
+              <div class="admin-row">
+                <label>
+                  <span data-i18n="name">Название</span>
+                  <input id="newAddonName" type="text" maxlength="32" placeholder="Bonus" data-i18n-placeholder="namePlaceholder">
+                </label>
+                <label>
+                  <span data-i18n="value">Значение</span>
+                  <input id="newAddonValue" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+                </label>
+                <label>
+                  <span data-i18n="type">Тип</span>
+                  <select id="newAddonType">
+                    <option value="hourly" data-i18n="hourlyAddon">kr/час</option>
+                    <option value="percent" data-i18n="percentAddon">% от ставки</option>
+                  </select>
+                </label>
+              </div>
+              <button class="primary-button compact" id="addAddonButton" type="button" data-i18n="addAddon">Добавить доплату</button>
+              <div class="admin-list" id="customAddonsList"></div>
+            </div>
+
+            <div class="admin-box">
+              <h3 data-i18n="customDeductionsTitle">Свои удержания</h3>
+              <div class="admin-row">
+                <label>
+                  <span data-i18n="name">Название</span>
+                  <input id="newDeductionName" type="text" maxlength="32" placeholder="Pension" data-i18n-placeholder="deductionPlaceholder">
+                </label>
+                <label>
+                  <span data-i18n="value">Значение</span>
+                  <input id="newDeductionValue" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+                </label>
+                <label>
+                  <span data-i18n="type">Тип</span>
+                  <select id="newDeductionType">
+                    <option value="fixed" data-i18n="fixedDeductionType">kr/месяц</option>
+                    <option value="percent" data-i18n="percentDeductionType">% от брутто</option>
+                  </select>
+                </label>
+              </div>
+              <button class="primary-button compact" id="addDeductionButton" type="button" data-i18n="addDeduction">Добавить удержание</button>
+              <div class="admin-list" id="customDeductionsList"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-panel">
+          <details>
+            <summary data-i18n="settings">Настройки расчёта</summary>
+            <div class="settings-grid">
+              <label>
+                <span data-i18n="defaultRate">Базовая ставка, kr/час</span>
+                <input id="defaultRate" type="number" min="0" step="0.01" inputmode="decimal" value="160">
+              </label>
+              <label>
+                <span data-i18n="sickRate">Больничные, kr/час</span>
+                <input id="sickRate" type="number" min="0" step="0.01" inputmode="decimal" value="160">
+              </label>
+              <label>
+                <span data-i18n="feriepengeRate">Feriepenge, %</span>
+                <input id="holidayPercent" type="number" min="0" step="0.1" inputmode="decimal" value="12.5">
+              </label>
+              <label>
+                AM-bidrag, %
+                <input id="amPercent" type="number" min="0" step="0.1" inputmode="decimal" value="8">
+              </label>
+              <label>
+                A-skat, %
+                <input id="taxPercent" type="number" min="0" max="100" step="0.1" inputmode="decimal" value="37">
+              </label>
+              <label>
+                <span data-i18n="fixedDeduction">ATP/пенсия за месяц, kr</span>
+                <input id="fixedDeduction" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+              </label>
+              <label>
+                <span data-i18n="eveningRate">Вечерняя, kr/час</span>
+                <input id="eveningRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+              </label>
+              <label>
+                <span data-i18n="nightRate">Ночная, kr/час</span>
+                <input id="nightRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+              </label>
+              <label>
+                <span data-i18n="weekendRate">Выходной, kr/час</span>
+                <input id="weekendRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+              </label>
+              <label>
+                <span data-i18n="overtimeRate">Overtime, %</span>
+                <input id="overtimePercent" type="number" min="0" step="1" inputmode="decimal" value="50">
+              </label>
+              <label>
+                <span data-i18n="localRate">Lokal-/особая, kr/час</span>
+                <input id="localRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+              </label>
+            </div>
+            <p class="hint" data-i18n="taxHint">Датские налоги зависят от налоговой карты, fradrag, коммуны, пенсии и договора. Здесь расчёт примерный: брутто → AM-bidrag → A-skat.</p>
+          </details>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js?v=9"></script>
+  </body>
+</html>
