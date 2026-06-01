@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=19">
+    <link rel="stylesheet" href="styles.css?v=20">
   </head>
   <body>
     <div class="app-shell">
@@ -252,6 +252,12 @@
           </section>
 
           <section class="settings-card">
+            <h3><span aria-hidden="true">↻</span><span data-i18n="appUpdate">Обновление приложения</span></h3>
+            <p class="settings-note" data-i18n="appUpdateHint">Если новая версия долго не появляется, нажмите эту кнопку. Смены и зарплатные листы останутся сохранены.</p>
+            <button class="primary-button compact" id="updateAppButton" type="button" data-i18n="forceUpdate">Обновить приложение</button>
+          </section>
+
+          <section class="settings-card">
             <h3><span aria-hidden="true">🔊</span><span data-i18n="soundVibration">Звук и вибрация</span></h3>
             <label class="switch-row">
               <span data-i18n="sound">Звук</span>
@@ -330,18 +336,18 @@
 
           <div class="about-settings settings-card">
             <h2><span aria-hidden="true">ⓘ</span><span data-i18n="aboutApp">О приложении</span></h2>
-            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.3</strong></p>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.4</strong></p>
             <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
           </div>
         </section>
       </main>
       <footer class="app-footer">
         <h2 data-i18n="aboutApp">О приложении</h2>
-        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.3</strong></p>
+        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.4</strong></p>
         <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
       </footer>
     </div>
 
-    <script src="app.js?v=19"></script>
+    <script src="app.js?v=20"></script>
   </body>
 </html>

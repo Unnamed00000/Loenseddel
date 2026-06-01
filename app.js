@@ -77,6 +77,7 @@ const els = {
   settingsToggle: document.querySelector("#settingsToggle"),
   settingsPanel: document.querySelector("#settingsPanel"),
   settingsClose: document.querySelector("#settingsClose"),
+  updateAppButton: document.querySelector("#updateAppButton"),
   soundEnabled: document.querySelector("#soundEnabled"),
   vibrationEnabled: document.querySelector("#vibrationEnabled"),
   themeToggle: document.querySelector("#themeToggle"),
@@ -114,6 +115,9 @@ const translations = {
     language: "Язык",
     currency: "Валюта",
     close: "Закрыть",
+    appUpdate: "Обновление приложения",
+    appUpdateHint: "Если новая версия долго не появляется, нажмите эту кнопку. Смены и зарплатные листы останутся сохранены.",
+    forceUpdate: "Обновить приложение",
     soundVibration: "Звук и вибрация",
     sound: "Звук",
     vibration: "Вибрация",
@@ -226,6 +230,9 @@ const translations = {
     language: "Language",
     currency: "Currency",
     close: "Close",
+    appUpdate: "App update",
+    appUpdateHint: "If the new version takes too long to appear, press this button. Shifts and payslips stay saved.",
+    forceUpdate: "Update app",
     soundVibration: "Sound and vibration",
     sound: "Sound",
     vibration: "Vibration",
@@ -338,6 +345,9 @@ const translations = {
     language: "Sprog",
     currency: "Valuta",
     close: "Luk",
+    appUpdate: "App-opdatering",
+    appUpdateHint: "Hvis den nye version ikke vises, tryk på denne knap. Vagter og lønsedler forbliver gemt.",
+    forceUpdate: "Opdater app",
     soundVibration: "Lyd og vibration",
     sound: "Lyd",
     vibration: "Vibration",
@@ -679,7 +689,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v19 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v20 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1170,6 +1180,20 @@ els.settingsClose.addEventListener("click", () => {
   closeSettingsPage();
 });
 
+els.updateAppButton.addEventListener("click", async () => {
+  giveFeedback("success");
+  if ("caches" in window) {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+  }
+  if ("serviceWorker" in navigator) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((registration) => registration.unregister()));
+  }
+  const freshUrl = `${window.location.pathname}?refresh=${Date.now()}`;
+  window.location.replace(freshUrl);
+});
+
 function openSettingsPage() {
   els.settingsPanel.removeAttribute("hidden");
   els.adminPanel.removeAttribute("hidden");
@@ -1254,8 +1278,25 @@ els.installButton.addEventListener("click", async () => {
 });
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js");
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+
+  window.addEventListener("load", async () => {
+    const registration = await navigator.serviceWorker.register("sw.js", { updateViaCache: "none" });
+    registration.waiting?.postMessage({ type: "SKIP_WAITING" });
+    registration.addEventListener("updatefound", () => {
+      const worker = registration.installing;
+      worker?.addEventListener("statechange", () => {
+        if (worker.state === "installed" && navigator.serviceWorker.controller) {
+          worker.postMessage({ type: "SKIP_WAITING" });
+        }
+      });
+    });
+    registration.update();
   });
 }
 
