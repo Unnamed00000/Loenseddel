@@ -1075,9 +1075,14 @@ els.refreshTotalsButton.addEventListener("click", () => {
 });
 
 els.settingsToggle.addEventListener("click", () => {
-  const nextHidden = !els.settingsPanel.hidden;
-  els.settingsPanel.hidden = nextHidden;
-  els.adminPanel.hidden = nextHidden;
+  const shouldOpen = els.settingsPanel.hidden;
+  els.settingsPanel.hidden = !shouldOpen;
+  els.adminPanel.hidden = !shouldOpen;
+  if (shouldOpen) {
+    window.requestAnimationFrame(() => {
+      els.settingsPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
 });
 
 els.adminClose.addEventListener("click", () => {
