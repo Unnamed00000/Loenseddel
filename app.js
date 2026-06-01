@@ -1079,21 +1079,29 @@ els.refreshTotalsButton.addEventListener("click", () => {
 });
 
 els.settingsToggle.addEventListener("click", () => {
-  const shouldOpen = els.settingsPanel.hidden;
-  els.settingsPanel.hidden = !shouldOpen;
-  els.adminPanel.hidden = !shouldOpen;
-  if (shouldOpen) els.settingsPanel.focus?.();
+  openSettingsPage();
 });
 
 els.adminClose.addEventListener("click", () => {
-  els.adminPanel.hidden = true;
-  els.settingsPanel.hidden = true;
+  closeSettingsPage();
 });
 
 els.settingsClose.addEventListener("click", () => {
+  closeSettingsPage();
+});
+
+function openSettingsPage() {
+  els.settingsPanel.hidden = false;
+  els.adminPanel.hidden = false;
+  document.body.classList.add("settings-mode");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function closeSettingsPage() {
   els.settingsPanel.hidden = true;
   els.adminPanel.hidden = true;
-});
+  document.body.classList.remove("settings-mode");
+}
 
 els.addAddonButton.addEventListener("click", () => {
   const name = els.newAddonName.value.trim();

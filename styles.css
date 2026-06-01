@@ -565,15 +565,21 @@ legend {
   gap: 14px;
 }
 
-.settings-panel:not([hidden]) {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  bottom: 12px;
-  z-index: 20;
-  width: min(460px, calc(100vw - 24px));
-  overflow: auto;
-  box-shadow: 0 18px 48px rgba(31, 37, 33, 0.24);
+.settings-page:not([hidden]) {
+  margin-top: 0;
+}
+
+body.settings-mode main > section:not(.settings-page),
+body.settings-mode .app-footer {
+  display: none;
+}
+
+body.settings-mode .settings-page {
+  display: grid;
+}
+
+.settings-only {
+  margin-top: 0;
 }
 
 .about-settings {
