@@ -106,6 +106,8 @@ const translations = {
     appKicker: "Учёт смен и зарплатных листов",
     appTitle: "Mit Arbejde",
     language: "Язык",
+    currency: "Валюта",
+    close: "Закрыть",
     monthSummary: "Итоги всех сохранённых смен",
     hours: "Часы",
     gross: "Брутто",
@@ -210,6 +212,8 @@ const translations = {
     appKicker: "Work and payslip tracker",
     appTitle: "Mit Arbejde",
     language: "Language",
+    currency: "Currency",
+    close: "Close",
     monthSummary: "Summary for all saved shifts",
     hours: "Hours",
     gross: "Gross",
@@ -314,6 +318,8 @@ const translations = {
     appKicker: "Arbejdstid og lønseddel",
     appTitle: "Mit Arbejde",
     language: "Sprog",
+    currency: "Valuta",
+    close: "Luk",
     monthSummary: "Oversigt for alle gemte vagter",
     hours: "Timer",
     gross: "Brutto",
@@ -611,7 +617,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v17 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v18 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 

@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="stylesheet" href="styles.css?v=18">
   </head>
   <body>
     <div class="app-shell">
@@ -230,20 +230,29 @@
               <p class="eyebrow" data-i18n="settings">Настройки</p>
               <h2 data-i18n="settings">Настройки</h2>
             </div>
-            <button class="text-button" id="settingsClose" type="button" data-i18n="exitAdmin">Выйти</button>
+            <button class="settings-close" id="settingsClose" type="button" aria-label="Закрыть" title="Закрыть" data-i18n-aria-label="close" data-i18n-title="close">×</button>
           </div>
 
-          <label class="language-picker">
-            <span data-i18n="language">Язык</span>
-            <select id="languageSelect" aria-label="Language">
-              <option value="ru">Русский</option>
-              <option value="en">English</option>
-              <option value="da">Dansk</option>
-            </select>
-          </label>
+          <section class="settings-card">
+            <h3><span aria-hidden="true">🌍</span><span data-i18n="language">Язык</span></h3>
+            <div class="settings-row-grid">
+              <label class="language-picker">
+                <span data-i18n="language">Язык</span>
+                <select id="languageSelect" aria-label="Language">
+                  <option value="ru">Русский</option>
+                  <option value="en">English</option>
+                  <option value="da">Dansk</option>
+                </select>
+              </label>
+              <label class="currency-picker">
+                <span data-i18n="currency">Валюта</span>
+                <input type="text" value="DKK kr" readonly>
+              </label>
+            </div>
+          </section>
 
-          <details>
-            <summary data-i18n="settings">Настройки</summary>
+          <details class="settings-card" open>
+            <summary><span aria-hidden="true">🧾</span><span data-i18n="settings">Настройки</span></summary>
             <div class="settings-grid">
               <label>
                 <span data-i18n="defaultRate">Базовая ставка, kr/час</span>
@@ -293,20 +302,20 @@
             <p class="hint" data-i18n="taxHint">Датские налоги зависят от налоговой карты, fradrag, коммуны, пенсии и договора. Здесь расчёт примерный: брутто → AM-bidrag → A-skat.</p>
           </details>
 
-          <div class="about-settings">
-            <h2 data-i18n="aboutApp">О приложении</h2>
-            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.1</strong></p>
+          <div class="about-settings settings-card">
+            <h2><span aria-hidden="true">ⓘ</span><span data-i18n="aboutApp">О приложении</span></h2>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.2</strong></p>
             <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
           </div>
         </section>
       </main>
       <footer class="app-footer">
         <h2 data-i18n="aboutApp">О приложении</h2>
-        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.1</strong></p>
+        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.2</strong></p>
         <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
       </footer>
     </div>
 
-    <script src="app.js?v=17"></script>
+    <script src="app.js?v=18"></script>
   </body>
 </html>
