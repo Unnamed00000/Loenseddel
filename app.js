@@ -32,6 +32,7 @@ const state = loadState();
 let currentDate = new Date();
 let selectedDate = toISODate(new Date());
 let deferredInstallPrompt = null;
+let feedbackAudioContext = null;
 
 const els = {
   installButton: document.querySelector("#installButton"),
@@ -80,6 +81,8 @@ const els = {
   updateAppButton: document.querySelector("#updateAppButton"),
   soundEnabled: document.querySelector("#soundEnabled"),
   vibrationEnabled: document.querySelector("#vibrationEnabled"),
+  testSoundButton: document.querySelector("#testSoundButton"),
+  testVibrationButton: document.querySelector("#testVibrationButton"),
   themeToggle: document.querySelector("#themeToggle"),
   adminPanel: document.querySelector("#adminPanel"),
   adminClose: document.querySelector("#adminClose"),
@@ -121,6 +124,8 @@ const translations = {
     soundVibration: "Звук и вибрация",
     sound: "Звук",
     vibration: "Вибрация",
+    testSound: "Проверить звук",
+    testVibration: "Проверить вибрацию",
     theme: "Тема",
     lightTheme: "Светлая",
     darkTheme: "Тёмная",
@@ -236,6 +241,8 @@ const translations = {
     soundVibration: "Sound and vibration",
     sound: "Sound",
     vibration: "Vibration",
+    testSound: "Test sound",
+    testVibration: "Test vibration",
     theme: "Theme",
     lightTheme: "Light",
     darkTheme: "Dark",
@@ -351,6 +358,8 @@ const translations = {
     soundVibration: "Lyd og vibration",
     sound: "Lyd",
     vibration: "Vibration",
+    testSound: "Test lyd",
+    testVibration: "Test vibration",
     theme: "Tema",
     lightTheme: "Lys",
     darkTheme: "Mørk",
@@ -493,28 +502,40 @@ function applyTheme() {
   document.querySelector("meta[name='theme-color']")?.setAttribute("content", isDark ? "#151c17" : "#243c2f");
 }
 
-function giveFeedback(type = "success") {
-  if (state.settings.vibrationEnabled && navigator.vibrate) {
+function giveFeedback(type = "success", options = {}) {
+  const shouldVibrate = options.forceVibration || (!options.soundOnly && state.settings.vibrationEnabled);
+  const shouldSound = options.forceSound || (!options.vibrationOnly && state.settings.soundEnabled);
+
+  if (shouldVibrate && navigator.vibrate) {
     navigator.vibrate(type === "delete" ? [28, 24, 28] : 32);
   }
 
-  if (!state.settings.soundEnabled) return;
+  if (!shouldSound) return;
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) return;
 
   try {
-    const context = new AudioContextClass();
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    oscillator.type = "sine";
-    oscillator.frequency.value = type === "delete" ? 220 : 440;
-    gain.gain.setValueAtTime(0.0001, context.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.08, context.currentTime + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.12);
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    oscillator.start();
-    oscillator.stop(context.currentTime + 0.14);
+    feedbackAudioContext ||= new AudioContextClass();
+    const play = () => {
+      const context = feedbackAudioContext;
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.value = type === "delete" ? 220 : 520;
+      gain.gain.setValueAtTime(0.0001, context.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.11, context.currentTime + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.16);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start();
+      oscillator.stop(context.currentTime + 0.18);
+    };
+
+    if (feedbackAudioContext.state === "suspended") {
+      feedbackAudioContext.resume().then(play).catch(() => {});
+    } else {
+      play();
+    }
   } catch {
     // Some browsers block audio until a stronger user gesture.
   }
@@ -689,7 +710,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v20 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v21 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1178,6 +1199,22 @@ els.adminClose.addEventListener("click", () => {
 
 els.settingsClose.addEventListener("click", () => {
   closeSettingsPage();
+});
+
+els.soundEnabled.addEventListener("change", () => {
+  if (els.soundEnabled.checked) giveFeedback("success", { forceSound: true, soundOnly: true });
+});
+
+els.vibrationEnabled.addEventListener("change", () => {
+  if (els.vibrationEnabled.checked) giveFeedback("success", { forceVibration: true, vibrationOnly: true });
+});
+
+els.testSoundButton.addEventListener("click", () => {
+  giveFeedback("success", { forceSound: true, soundOnly: true });
+});
+
+els.testVibrationButton.addEventListener("click", () => {
+  giveFeedback("success", { forceVibration: true, vibrationOnly: true });
 });
 
 els.updateAppButton.addEventListener("click", async () => {

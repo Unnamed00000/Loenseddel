@@ -42,6 +42,13 @@ select {
   font: inherit;
 }
 
+button {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: center;
+  white-space: normal;
+}
+
 .app-shell {
   width: min(1180px, 100%);
   margin: 0 auto;
@@ -217,6 +224,7 @@ h2 {
   border: 0;
   border-radius: 8px;
   cursor: pointer;
+  line-height: 1.18;
 }
 
 .icon-button {
@@ -228,7 +236,7 @@ h2 {
 }
 
 .text-button {
-  padding: 0 12px;
+  padding: 10px 12px;
   background: transparent;
   color: var(--muted);
   font-weight: 800;
@@ -280,6 +288,11 @@ h2 {
   box-shadow: 0 8px 18px rgba(31, 37, 33, 0.08);
 }
 
+body.theme-dark .settings-close {
+  border-color: var(--line);
+  background: #222a20;
+}
+
 .settings-close:hover {
   background: #eef4ea;
   color: var(--accent);
@@ -302,10 +315,15 @@ body.theme-dark .settings-close:hover {
 
 .primary-button {
   width: 100%;
-  padding: 0 18px;
+  padding: 11px 18px;
   background: var(--accent);
   color: white;
   font-weight: 850;
+}
+
+body.theme-dark .primary-button,
+body.theme-dark .icon-button {
+  color: #121711;
 }
 
 .shift-form {
@@ -677,13 +695,18 @@ body.settings-mode .admin-panel {
 
 .switch-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 60px;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
   min-height: 42px;
   color: var(--ink);
   font-size: 1rem;
   font-weight: 850;
+}
+
+.switch-row > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .switch-input,
@@ -729,14 +752,21 @@ body.settings-mode .admin-panel {
 
 .theme-toggle {
   display: grid;
-  grid-template-columns: max-content minmax(120px, 170px) max-content;
+  grid-template-columns: minmax(64px, max-content) minmax(86px, 170px) minmax(64px, max-content);
   align-items: center;
   justify-content: center;
   gap: 12px;
+  width: 100%;
   min-height: 58px;
   color: var(--ink);
   font-size: 1rem;
   font-weight: 900;
+}
+
+.theme-toggle > span:not(.theme-track) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 
 .theme-track {
@@ -769,6 +799,22 @@ body.settings-mode .admin-panel {
 body.theme-dark .switch-control,
 body.theme-dark .theme-track {
   background: #303b2d;
+}
+
+.settings-action-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.settings-test-button {
+  border: 1px solid var(--line);
+  background: #faf9f4;
+  color: var(--ink);
+}
+
+body.theme-dark .settings-test-button {
+  background: #222a20;
 }
 
 .settings-card .language-picker {
@@ -869,6 +915,7 @@ summary::-webkit-details-marker {
   .workspace,
   .admin-grid,
   .payroll-controls,
+  .settings-action-row,
   .settings-row-grid,
   .settings-grid {
     grid-template-columns: 1fr;
@@ -926,13 +973,15 @@ summary::-webkit-details-marker {
   .admin-row,
   .payroll-controls,
   .pay-slip-grid,
-  .theme-toggle,
   .settings-grid {
     grid-template-columns: 1fr;
   }
 
   .theme-toggle {
-    justify-items: stretch;
+    grid-template-columns: minmax(52px, 0.7fr) minmax(78px, 1fr) minmax(52px, 0.7fr);
+    gap: 8px;
+    justify-items: center;
+    font-size: 0.92rem;
   }
 
   .theme-track {
