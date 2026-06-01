@@ -2,11 +2,12 @@ const storeKey = "dk-work-time-v1";
 const languageKey = "dk-work-time-language-v1";
 const migratedKey = "dk-work-time-migrated-v1";
 const locale = "ru-RU";
-const languageLocales = { ru: "ru-RU", en: "en-GB", da: "da-DK" };
+const languageLocales = { ka: "ka-GE", ru: "ru-RU", en: "en-GB", da: "da-DK" };
 
 const defaults = {
   settings: {
     language: "ru",
+    currency: "DKK",
     defaultRate: 160,
     sickRate: 160,
     holidayPercent: 12.5,
@@ -78,7 +79,7 @@ const els = {
   settingsToggle: document.querySelector("#settingsToggle"),
   settingsPanel: document.querySelector("#settingsPanel"),
   settingsClose: document.querySelector("#settingsClose"),
-  updateAppButton: document.querySelector("#updateAppButton"),
+  currencySelect: document.querySelector("#currencySelect"),
   soundEnabled: document.querySelector("#soundEnabled"),
   vibrationEnabled: document.querySelector("#vibrationEnabled"),
   testSoundButton: document.querySelector("#testSoundButton"),
@@ -118,9 +119,6 @@ const translations = {
     language: "Язык",
     currency: "Валюта",
     close: "Закрыть",
-    appUpdate: "Обновление приложения",
-    appUpdateHint: "Если новая версия долго не появляется, нажмите эту кнопку. Смены и зарплатные листы останутся сохранены.",
-    forceUpdate: "Обновить приложение",
     soundVibration: "Звук и вибрация",
     sound: "Звук",
     vibration: "Вибрация",
@@ -143,7 +141,7 @@ const translations = {
     start: "Начало",
     end: "Конец",
     breakMinutes: "Перерыв, мин",
-    hourlyRate: "Ставка, kr/час",
+    hourlyRate: "Ставка, в час",
     ratePlaceholder: "например 160",
     addons: "Доплаты",
     evening: "Вечерняя",
@@ -160,13 +158,13 @@ const translations = {
     beforeTax: "До налога",
     takeHome: "На руку",
     settings: "Настройки",
-    defaultRate: "Базовая ставка, kr/час",
-    sickRate: "Больничные, kr/час",
-    fixedDeduction: "ATP/пенсия за месяц, kr",
-    eveningRate: "Вечерняя, kr/час",
-    nightRate: "Ночная, kr/час",
-    weekendRate: "Выходной, kr/час",
-    localRate: "Lokal-/особая, kr/час",
+    defaultRate: "Базовая ставка, в час",
+    sickRate: "Больничные, в час",
+    fixedDeduction: "ATP/пенсия за месяц",
+    eveningRate: "Вечерняя, в час",
+    nightRate: "Ночная, в час",
+    weekendRate: "Выходной, в час",
+    localRate: "Lokal-/особая, в час",
     overtimeRate: "Сверхурочные, %",
     taxHint: "Датские налоги зависят от налоговой карты, fradrag, коммуны, пенсии и договора. Здесь расчёт примерный: брутто -> AM-bidrag -> A-skat.",
     noShift: "Нет смены",
@@ -189,9 +187,9 @@ const translations = {
     type: "Тип",
     namePlaceholder: "например Hotel bonus",
     deductionPlaceholder: "например Pension",
-    hourlyAddon: "kr/час",
+    hourlyAddon: "за час",
     percentAddon: "% от ставки",
-    fixedDeductionType: "kr/месяц",
+    fixedDeductionType: "за месяц",
     percentDeductionType: "% от брутто",
     addAddon: "Добавить доплату",
     addDeduction: "Добавить удержание",
@@ -235,9 +233,6 @@ const translations = {
     language: "Language",
     currency: "Currency",
     close: "Close",
-    appUpdate: "App update",
-    appUpdateHint: "If the new version takes too long to appear, press this button. Shifts and payslips stay saved.",
-    forceUpdate: "Update app",
     soundVibration: "Sound and vibration",
     sound: "Sound",
     vibration: "Vibration",
@@ -260,7 +255,7 @@ const translations = {
     start: "Start",
     end: "End",
     breakMinutes: "Break, min",
-    hourlyRate: "Rate, kr/hour",
+    hourlyRate: "Rate per hour",
     ratePlaceholder: "for example 160",
     addons: "Add-ons",
     evening: "Evening",
@@ -277,13 +272,13 @@ const translations = {
     beforeTax: "Before tax",
     takeHome: "Take-home",
     settings: "Settings",
-    defaultRate: "Base rate, kr/hour",
-    sickRate: "Sick pay, kr/hour",
-    fixedDeduction: "ATP/pension per month, kr",
-    eveningRate: "Evening, kr/hour",
-    nightRate: "Night, kr/hour",
-    weekendRate: "Weekend, kr/hour",
-    localRate: "Local/special, kr/hour",
+    defaultRate: "Base rate per hour",
+    sickRate: "Sick pay per hour",
+    fixedDeduction: "ATP/pension per month",
+    eveningRate: "Evening per hour",
+    nightRate: "Night per hour",
+    weekendRate: "Weekend per hour",
+    localRate: "Local/special per hour",
     overtimeRate: "Overtime, %",
     taxHint: "Danish tax depends on your tax card, fradrag, municipality, pension and agreement. This is an estimate: gross -> AM-bidrag -> A-skat.",
     noShift: "No shift",
@@ -306,9 +301,9 @@ const translations = {
     type: "Type",
     namePlaceholder: "for example Hotel bonus",
     deductionPlaceholder: "for example Pension",
-    hourlyAddon: "kr/hour",
+    hourlyAddon: "per hour",
     percentAddon: "% of rate",
-    fixedDeductionType: "kr/month",
+    fixedDeductionType: "per month",
     percentDeductionType: "% of gross",
     addAddon: "Add add-on",
     addDeduction: "Add deduction",
@@ -352,9 +347,6 @@ const translations = {
     language: "Sprog",
     currency: "Valuta",
     close: "Luk",
-    appUpdate: "App-opdatering",
-    appUpdateHint: "Hvis den nye version ikke vises, tryk på denne knap. Vagter og lønsedler forbliver gemt.",
-    forceUpdate: "Opdater app",
     soundVibration: "Lyd og vibration",
     sound: "Lyd",
     vibration: "Vibration",
@@ -377,7 +369,7 @@ const translations = {
     start: "Start",
     end: "Slut",
     breakMinutes: "Pause, min",
-    hourlyRate: "Sats, kr/time",
+    hourlyRate: "Sats pr. time",
     ratePlaceholder: "for eksempel 160",
     addons: "Tillæg",
     evening: "Aften",
@@ -394,13 +386,13 @@ const translations = {
     beforeTax: "Før skat",
     takeHome: "Udbetalt",
     settings: "Indstillinger",
-    defaultRate: "Grundsats, kr/time",
-    sickRate: "Sygedagpenge, kr/time",
-    fixedDeduction: "ATP/pension pr. måned, kr",
-    eveningRate: "Aften, kr/time",
-    nightRate: "Nat, kr/time",
-    weekendRate: "Weekend, kr/time",
-    localRate: "Lokalt/særligt, kr/time",
+    defaultRate: "Grundsats pr. time",
+    sickRate: "Sygedagpenge pr. time",
+    fixedDeduction: "ATP/pension pr. måned",
+    eveningRate: "Aften pr. time",
+    nightRate: "Nat pr. time",
+    weekendRate: "Weekend pr. time",
+    localRate: "Lokalt/særligt pr. time",
     overtimeRate: "Overarbejde, %",
     taxHint: "Dansk skat afhænger af skattekort, fradrag, kommune, pension og aftale. Dette er et estimat: brutto -> AM-bidrag -> A-skat.",
     noShift: "Ingen vagt",
@@ -423,9 +415,9 @@ const translations = {
     type: "Type",
     namePlaceholder: "fx Hotel bonus",
     deductionPlaceholder: "fx Pension",
-    hourlyAddon: "kr/time",
+    hourlyAddon: "pr. time",
     percentAddon: "% af sats",
-    fixedDeductionType: "kr/måned",
+    fixedDeductionType: "pr. måned",
     percentDeductionType: "% af brutto",
     addAddon: "Tilføj tillæg",
     addDeduction: "Tilføj fradrag",
@@ -463,6 +455,121 @@ const translations = {
     versionLabel: "Version",
     developerLabel: "Udvikler"
   }
+};
+
+translations.ka = {
+  ...translations.en,
+  appKicker: "სამუშაო დრო და ხელფასის ფურცელი",
+  appTitle: "Mit Arbejde",
+  language: "ენა",
+  currency: "ვალუტა",
+  close: "დახურვა",
+  soundVibration: "ხმა და ვიბრაცია",
+  sound: "ხმა",
+  vibration: "ვიბრაცია",
+  testSound: "ხმის შემოწმება",
+  testVibration: "ვიბრაციის შემოწმება",
+  theme: "თემა",
+  lightTheme: "ღია",
+  darkTheme: "მუქი",
+  monthSummary: "ყველა შენახული ცვლის შეჯამება",
+  hours: "საათები",
+  gross: "ბრუტო",
+  afterDeductions: "დაქვითვების შემდეგ",
+  prevMonth: "წინა თვე",
+  nextMonth: "შემდეგი თვე",
+  shift: "ცვლა",
+  date: "თარიღი",
+  dayType: "დღის ტიპი",
+  worked: "ვიმუშავე",
+  sick: "ავად",
+  start: "დაწყება",
+  end: "დასრულება",
+  breakMinutes: "შესვენება, წთ",
+  hourlyRate: "ტარიფი, საათში",
+  ratePlaceholder: "მაგალითად 160",
+  addons: "დანამატები",
+  evening: "საღამო",
+  night: "ღამე",
+  weekend: "შაბათ-კვირა",
+  localAddon: "ადგილობრივი/სპეციალური დანამატი",
+  overtime: "ზეგანაკვეთური",
+  note: "შენიშვნა",
+  notePlaceholder: "ადგილი, სასტუმრო, განყოფილება, კომენტარი",
+  saveShift: "ცვლის შენახვა",
+  savedTotals: "შენახული ცვლების ჯამი",
+  savedMonth: "ყველა შენახული ცვლა",
+  savedCount: "შენახული ცვლები",
+  beforeTax: "გადასახადამდე",
+  takeHome: "ხელზე",
+  settings: "პარამეტრები",
+  defaultRate: "ძირითადი ტარიფი, საათში",
+  sickRate: "ავადმყოფობის ანაზღაურება, საათში",
+  fixedDeduction: "ATP/პენსია თვეში",
+  eveningRate: "საღამო, საათში",
+  nightRate: "ღამე, საათში",
+  weekendRate: "შაბათ-კვირა, საათში",
+  localRate: "ადგილობრივი/სპეციალური, საათში",
+  overtimeRate: "ზეგანაკვეთური, %",
+  taxHint: "დანიის გადასახადი დამოკიდებულია საგადასახადო ბარათზე, fradrag-ზე, კომუნაზე, პენსიაზე და ხელშეკრულებაზე. ეს არის სავარაუდო გამოთვლა: ბრუტო -> AM-bidrag -> A-skat.",
+  noShift: "ცვლა არ არის",
+  deleteShift: "ცვლის წაშლა",
+  saved: "ცვლა შენახულია",
+  draft: "შავი ვარიანტი, ჯერ არ არის შენახული",
+  changed: "შეცვლილია, დააჭირეთ შენახვას",
+  weekdays: ["ორშ", "სამ", "ოთხ", "ხუთ", "პარ", "შაბ", "კვი"],
+  hourShort: "სთ",
+  workShort: "სამუშაო",
+  sickShort: "ავად",
+  admin: "ადმინი",
+  exitAdmin: "გასვლა",
+  adminKicker: "ადმინი",
+  adminTitle: "გამოთვლის ადმინი",
+  customAddonsTitle: "ჩემი დანამატები",
+  customDeductionsTitle: "ჩემი დაქვითვები",
+  name: "სახელი",
+  value: "მნიშვნელობა",
+  type: "ტიპი",
+  namePlaceholder: "მაგალითად Hotel bonus",
+  deductionPlaceholder: "მაგალითად Pension",
+  hourlyAddon: "საათში",
+  percentAddon: "% ტარიფიდან",
+  fixedDeductionType: "თვეში",
+  percentDeductionType: "% ბრუტოდან",
+  addAddon: "დანამატის დამატება",
+  addDeduction: "დაქვითვის დამატება",
+  remove: "წაშლა",
+  noCustomAddons: "დანამატები ჯერ არ არის",
+  noCustomDeductions: "დაქვითვები ჯერ არ არის",
+  install: "დაყენება",
+  feriepenge: "შვებულების ფული",
+  feriepengeRate: "შვებულების ფული, %",
+  payrollKicker: "ხელფასის ფურცელი",
+  payrollTitle: "ხელფასის ფურცელი",
+  fromDate: "დან",
+  toDate: "მდე",
+  createPaySlip: "ხელფასის ფურცლის შექმნა",
+  payrollHint: "აირჩიეთ პერიოდი, რომლისთვისაც ხელფასი მიიღეთ. ამ პერიოდის ცვლები ისტორიაში გადავა.",
+  noPaySlips: "ხელფასის ფურცლების ისტორია ცარიელია",
+  paySlipCreated: "ხელფასის ფურცელი შეიქმნა, ცვლები ისტორიაში გადავიდა",
+  noShiftsInRange: "ამ პერიოდში შენახული ცვლები არ არის",
+  paidOn: "შექმნილია",
+  shiftsCount: "ცვლები",
+  history: "ისტორია",
+  noSavedShifts: "შენახული ცვლები ჯერ არ არის",
+  period: "პერიოდი",
+  project: "პროექტი",
+  refreshTotals: "ჯამების განახლება",
+  debugInfo: "მეხსიერება",
+  savedPersistenceHint: "ცვლები დახურვის შემდეგაც ინახება და აქ დარჩება, სანამ არ წაშლით ან ხელფასის ფურცელს არ შექმნით.",
+  saveAs: "შენახვა როგორც",
+  loadPaySlip: "ჩატვირთვა",
+  paySlipLoaded: "ხელფასის ფურცელი ისტორიაში ჩაიტვირთა",
+  paySlipLoadError: "ფაილის ჩატვირთვა ვერ მოხერხდა",
+  aboutApp: "აპის შესახებ",
+  appNameLabel: "სახელი",
+  versionLabel: "ვერსია",
+  developerLabel: "დეველოპერი"
 };
 
 function tr(key) {
@@ -589,9 +696,9 @@ function toISODate(date) {
 
 function money(value) {
   const amount = Number.isFinite(Number(value)) ? Number(value) : 0;
-  return new Intl.NumberFormat("da-DK", {
+  return new Intl.NumberFormat(activeLocale(), {
     style: "currency",
-    currency: "DKK",
+    currency: state.settings.currency || "DKK",
     maximumFractionDigits: 0
   }).format(amount);
 }
@@ -611,6 +718,7 @@ function toId(prefix) {
 function getSettingsFromInputs() {
   return {
     language: state.settings.language || "ru",
+    currency: els.currencySelect.value || "DKK",
     defaultRate: numberValue("defaultRate"),
     sickRate: numberValue("sickRate"),
     holidayPercent: numberValue("holidayPercent"),
@@ -710,7 +818,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v21 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v22 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -921,6 +1029,7 @@ function applyLanguage() {
   document.documentElement.lang = language;
   document.title = tr("appTitle");
   els.languageSelect.value = language;
+  els.currencySelect.value = state.settings.currency || "DKK";
   els.installButton.title = tr("install");
   els.installButton.setAttribute("aria-label", tr("install"));
   document.querySelectorAll("[data-i18n]").forEach((node) => {
@@ -1128,6 +1237,15 @@ els.languageSelect.addEventListener("change", () => {
   renderAll();
 });
 
+els.currencySelect.addEventListener("change", () => {
+  state.settings.currency = els.currencySelect.value || "DKK";
+  saveState();
+  renderSummary();
+  renderCalendar();
+  renderPaySlips();
+  renderShiftPreview();
+});
+
 els.createPaySlipButton.addEventListener("click", () => {
   syncStateFromStorage();
   const { from, to } = getPaySlipRange();
@@ -1215,20 +1333,6 @@ els.testSoundButton.addEventListener("click", () => {
 
 els.testVibrationButton.addEventListener("click", () => {
   giveFeedback("success", { forceVibration: true, vibrationOnly: true });
-});
-
-els.updateAppButton.addEventListener("click", async () => {
-  giveFeedback("success");
-  if ("caches" in window) {
-    const keys = await caches.keys();
-    await Promise.all(keys.map((key) => caches.delete(key)));
-  }
-  if ("serviceWorker" in navigator) {
-    const registrations = await navigator.serviceWorker.getRegistrations();
-    await Promise.all(registrations.map((registration) => registration.unregister()));
-  }
-  const freshUrl = `${window.location.pathname}?refresh=${Date.now()}`;
-  window.location.replace(freshUrl);
 });
 
 function openSettingsPage() {

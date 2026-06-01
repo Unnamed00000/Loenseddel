@@ -192,8 +192,19 @@ h2 {
   text-align: left;
 }
 
+body.theme-dark .day-button {
+  background: #20291e;
+  color: var(--ink);
+}
+
 .day-button.is-muted {
-  opacity: 0.42;
+  opacity: 0.52;
+}
+
+body.theme-dark .day-button.is-muted {
+  background: #181f17;
+  color: var(--muted);
+  opacity: 0.72;
 }
 
 .day-button.is-selected {
@@ -201,8 +212,17 @@ h2 {
   box-shadow: 0 0 0 2px rgba(47, 111, 131, 0.18);
 }
 
+body.theme-dark .day-button.is-selected {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 2px rgba(121, 184, 202, 0.28);
+}
+
 .day-button.has-shift {
   background: #eef4ea;
+}
+
+body.theme-dark .day-button.has-shift {
+  background: #253a29;
 }
 
 .day-number {
@@ -215,6 +235,10 @@ h2 {
   font-size: 0.78rem;
   font-weight: 700;
   overflow-wrap: anywhere;
+}
+
+body.theme-dark .day-meta {
+  color: #b9dfa9;
 }
 
 .icon-button,

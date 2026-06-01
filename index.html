@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=21">
+    <link rel="stylesheet" href="styles.css?v=22">
   </head>
   <body>
     <div class="app-shell">
@@ -239,6 +239,7 @@
               <label class="language-picker">
                 <span data-i18n="language">Язык</span>
                 <select id="languageSelect" aria-label="Language">
+                  <option value="ka">ქართული</option>
                   <option value="ru">Русский</option>
                   <option value="en">English</option>
                   <option value="da">Dansk</option>
@@ -246,15 +247,15 @@
               </label>
               <label class="currency-picker">
                 <span data-i18n="currency">Валюта</span>
-                <input type="text" value="DKK kr" readonly>
+                <select id="currencySelect" aria-label="Currency">
+                  <option value="DKK">DKK kr</option>
+                  <option value="GEL">GEL ₾</option>
+                  <option value="USD">USD $</option>
+                  <option value="EUR">EUR €</option>
+                  <option value="RUB">RUB ₽</option>
+                </select>
               </label>
             </div>
-          </section>
-
-          <section class="settings-card">
-            <h3><span aria-hidden="true">↻</span><span data-i18n="appUpdate">Обновление приложения</span></h3>
-            <p class="settings-note" data-i18n="appUpdateHint">Если новая версия долго не появляется, нажмите эту кнопку. Смены и зарплатные листы останутся сохранены.</p>
-            <button class="primary-button compact" id="updateAppButton" type="button" data-i18n="forceUpdate">Обновить приложение</button>
           </section>
 
           <section class="settings-card">
@@ -340,18 +341,18 @@
 
           <div class="about-settings settings-card">
             <h2><span aria-hidden="true">ⓘ</span><span data-i18n="aboutApp">О приложении</span></h2>
-            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.5</strong></p>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.6</strong></p>
             <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
           </div>
         </section>
       </main>
       <footer class="app-footer">
         <h2 data-i18n="aboutApp">О приложении</h2>
-        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.5</strong></p>
+        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.6</strong></p>
         <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
       </footer>
     </div>
 
-    <script src="app.js?v=21"></script>
+    <script src="app.js?v=22"></script>
   </body>
 </html>
