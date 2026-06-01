@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=22">
+    <link rel="stylesheet" href="styles.css?v=23">
   </head>
   <body>
     <div class="app-shell">
@@ -259,6 +259,21 @@
           </section>
 
           <section class="settings-card">
+            <h3><span aria-hidden="true">📲</span><span data-i18n="installSection">Установка и доступ</span></h3>
+            <button class="primary-button compact" id="androidInstallButton" type="button" data-i18n="installAndroid">Установить на Android</button>
+            <p class="settings-note" id="installStatus" data-i18n="androidInstallHint">На Android кнопка откроет установку, если браузер поддерживает PWA.</p>
+            <details class="install-details">
+              <summary><span aria-hidden="true">📱</span><span data-i18n="iphoneInstallTitle">Инструкция для iPhone</span></summary>
+              <ol class="install-steps">
+                <li data-i18n="iphoneStep1">Откройте сайт в Safari.</li>
+                <li data-i18n="iphoneStep2">Нажмите кнопку «Поделиться».</li>
+                <li data-i18n="iphoneStep3">Выберите «На экран Домой».</li>
+                <li data-i18n="iphoneStep4">Нажмите «Добавить».</li>
+              </ol>
+            </details>
+          </section>
+
+          <section class="settings-card">
             <h3><span aria-hidden="true">🔊</span><span data-i18n="soundVibration">Звук и вибрация</span></h3>
             <label class="switch-row">
               <span data-i18n="sound">Звук</span>
@@ -341,18 +356,18 @@
 
           <div class="about-settings settings-card">
             <h2><span aria-hidden="true">ⓘ</span><span data-i18n="aboutApp">О приложении</span></h2>
-            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.6</strong></p>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.7</strong></p>
             <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
           </div>
         </section>
       </main>
       <footer class="app-footer">
         <h2 data-i18n="aboutApp">О приложении</h2>
-        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.6</strong></p>
+        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.7</strong></p>
         <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
       </footer>
     </div>
 
-    <script src="app.js?v=22"></script>
+    <script src="app.js?v=23"></script>
   </body>
 </html>

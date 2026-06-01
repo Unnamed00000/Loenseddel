@@ -37,6 +37,8 @@ let feedbackAudioContext = null;
 
 const els = {
   installButton: document.querySelector("#installButton"),
+  androidInstallButton: document.querySelector("#androidInstallButton"),
+  installStatus: document.querySelector("#installStatus"),
   totalHours: document.querySelector("#totalHours"),
   grossPay: document.querySelector("#grossPay"),
   holidayPay: document.querySelector("#holidayPay"),
@@ -119,6 +121,15 @@ const translations = {
     language: "Язык",
     currency: "Валюта",
     close: "Закрыть",
+    installSection: "Установка и доступ",
+    installAndroid: "Установить на Android",
+    androidInstallHint: "На Android кнопка откроет установку, если браузер поддерживает PWA.",
+    androidInstallUnavailable: "Если окно установки не открылось, откройте меню браузера и выберите «Установить приложение» или «Добавить на главный экран».",
+    iphoneInstallTitle: "Инструкция для iPhone",
+    iphoneStep1: "Откройте сайт в Safari.",
+    iphoneStep2: "Нажмите кнопку «Поделиться».",
+    iphoneStep3: "Выберите «На экран Домой».",
+    iphoneStep4: "Нажмите «Добавить».",
     soundVibration: "Звук и вибрация",
     sound: "Звук",
     vibration: "Вибрация",
@@ -233,6 +244,15 @@ const translations = {
     language: "Language",
     currency: "Currency",
     close: "Close",
+    installSection: "Install and access",
+    installAndroid: "Install on Android",
+    androidInstallHint: "On Android the button opens installation when the browser supports PWA.",
+    androidInstallUnavailable: "If the install window does not open, use the browser menu and choose Install app or Add to Home screen.",
+    iphoneInstallTitle: "iPhone instructions",
+    iphoneStep1: "Open the site in Safari.",
+    iphoneStep2: "Tap the Share button.",
+    iphoneStep3: "Choose Add to Home Screen.",
+    iphoneStep4: "Tap Add.",
     soundVibration: "Sound and vibration",
     sound: "Sound",
     vibration: "Vibration",
@@ -347,6 +367,15 @@ const translations = {
     language: "Sprog",
     currency: "Valuta",
     close: "Luk",
+    installSection: "Installation og adgang",
+    installAndroid: "Installer på Android",
+    androidInstallHint: "På Android åbner knappen installationen, hvis browseren understøtter PWA.",
+    androidInstallUnavailable: "Hvis installationsvinduet ikke åbner, brug browsermenuen og vælg Installer app eller Føj til startskærm.",
+    iphoneInstallTitle: "iPhone-vejledning",
+    iphoneStep1: "Åbn siden i Safari.",
+    iphoneStep2: "Tryk på Del-knappen.",
+    iphoneStep3: "Vælg Føj til hjemmeskærm.",
+    iphoneStep4: "Tryk på Tilføj.",
     soundVibration: "Lyd og vibration",
     sound: "Lyd",
     vibration: "Vibration",
@@ -464,6 +493,15 @@ translations.ka = {
   language: "ენა",
   currency: "ვალუტა",
   close: "დახურვა",
+  installSection: "დაყენება და წვდომა",
+  installAndroid: "Android-ზე დაყენება",
+  androidInstallHint: "Android-ზე ღილაკი გახსნის დაყენებას, თუ ბრაუზერი PWA-ს მხარდაჭერას იძლევა.",
+  androidInstallUnavailable: "თუ დაყენების ფანჯარა არ გაიხსნა, გახსენით ბრაუზერის მენიუ და აირჩიეთ Install app ან Add to Home screen.",
+  iphoneInstallTitle: "ინსტრუქცია iPhone-ისთვის",
+  iphoneStep1: "გახსენით საიტი Safari-ში.",
+  iphoneStep2: "დააჭირეთ Share ღილაკს.",
+  iphoneStep3: "აირჩიეთ Add to Home Screen.",
+  iphoneStep4: "დააჭირეთ Add-ს.",
   soundVibration: "ხმა და ვიბრაცია",
   sound: "ხმა",
   vibration: "ვიბრაცია",
@@ -818,7 +856,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v22 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v23 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1410,13 +1448,20 @@ window.addEventListener("beforeinstallprompt", (event) => {
   els.installButton.hidden = false;
 });
 
-els.installButton.addEventListener("click", async () => {
-  if (!deferredInstallPrompt) return;
+async function promptInstall() {
+  if (!deferredInstallPrompt) {
+    els.installStatus.textContent = tr("androidInstallUnavailable");
+    return;
+  }
   deferredInstallPrompt.prompt();
   await deferredInstallPrompt.userChoice;
   deferredInstallPrompt = null;
   els.installButton.hidden = true;
-});
+  els.installStatus.textContent = tr("androidInstallHint");
+}
+
+els.installButton.addEventListener("click", promptInstall);
+els.androidInstallButton.addEventListener("click", promptInstall);
 
 if ("serviceWorker" in navigator) {
   let refreshing = false;

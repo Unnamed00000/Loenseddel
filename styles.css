@@ -841,6 +841,27 @@ body.theme-dark .settings-test-button {
   background: #222a20;
 }
 
+.install-details {
+  display: grid;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.install-steps {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 22px;
+  color: var(--muted);
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.install-steps li {
+  padding-left: 2px;
+}
+
 .settings-card .language-picker {
   width: auto;
 }
