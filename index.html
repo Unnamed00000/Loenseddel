@@ -4,29 +4,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#243c2f">
-    <title>Рабочее время DK</title>
+    <title>Mit Arbejde</title>
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=9">
+    <link rel="stylesheet" href="styles.css?v=11">
   </head>
   <body>
     <div class="app-shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow" data-i18n="appKicker">Denmark work tracker</p>
-          <h1 data-i18n="appTitle">Рабочее время</h1>
+          <p class="eyebrow" data-i18n="appKicker">Work and payslip tracker</p>
+          <h1 data-i18n="appTitle">Mit Arbejde</h1>
         </div>
         <div class="top-actions">
-          <label class="language-picker">
-            <span data-i18n="language">Язык</span>
-            <select id="languageSelect" aria-label="Language">
-              <option value="ru">Русский</option>
-              <option value="en">English</option>
-              <option value="da">Dansk</option>
-            </select>
-          </label>
-          <button class="text-button admin-toggle" id="adminToggle" type="button" data-i18n="admin">Админка</button>
+          <button class="text-button settings-toggle" id="settingsToggle" type="button" data-i18n="settings">Настройки</button>
           <button class="icon-button" id="installButton" type="button" hidden aria-label="Установить приложение" title="Установить">
             <span aria-hidden="true">↓</span>
           </button>
@@ -228,9 +220,26 @@
           </div>
         </section>
 
-        <section class="settings-panel">
+        <section class="settings-panel" id="settingsPanel" hidden>
+          <div class="settings-head">
+            <div>
+              <p class="eyebrow" data-i18n="settings">Настройки</p>
+              <h2 data-i18n="settings">Настройки</h2>
+            </div>
+            <button class="text-button" id="settingsClose" type="button" data-i18n="exitAdmin">Выйти</button>
+          </div>
+
+          <label class="language-picker">
+            <span data-i18n="language">Язык</span>
+            <select id="languageSelect" aria-label="Language">
+              <option value="ru">Русский</option>
+              <option value="en">English</option>
+              <option value="da">Dansk</option>
+            </select>
+          </label>
+
           <details>
-            <summary data-i18n="settings">Настройки расчёта</summary>
+            <summary data-i18n="settings">Настройки</summary>
             <div class="settings-grid">
               <label>
                 <span data-i18n="defaultRate">Базовая ставка, kr/час</span>
@@ -279,10 +288,16 @@
             </div>
             <p class="hint" data-i18n="taxHint">Датские налоги зависят от налоговой карты, fradrag, коммуны, пенсии и договора. Здесь расчёт примерный: брутто → AM-bidrag → A-skat.</p>
           </details>
+
+          <div class="about-settings">
+            <h2 data-i18n="aboutApp">О приложении</h2>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.0</strong></p>
+            <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
+          </div>
         </section>
       </main>
     </div>
 
-    <script src="app.js?v=9"></script>
+    <script src="app.js?v=11"></script>
   </body>
 </html>

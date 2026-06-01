@@ -21,6 +21,7 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--ink);
+  overflow-x: hidden;
 }
 
 button,
@@ -33,6 +34,7 @@ select {
   width: min(1180px, 100%);
   margin: 0 auto;
   padding: max(18px, env(safe-area-inset-top)) 16px 28px;
+  overflow-x: hidden;
 }
 
 .topbar,
@@ -47,6 +49,7 @@ select {
 
 .topbar {
   margin-bottom: 18px;
+  align-items: flex-start;
 }
 
 .top-actions {
@@ -58,7 +61,7 @@ select {
 }
 
 .language-picker {
-  min-width: 118px;
+  width: min(320px, 100%);
   gap: 5px;
   font-size: 0.78rem;
 }
@@ -219,7 +222,8 @@ h2 {
   font-weight: 800;
 }
 
-.admin-toggle {
+.admin-toggle,
+.settings-toggle {
   border: 1px solid var(--line);
   background: white;
   color: var(--accent);
@@ -468,7 +472,12 @@ legend {
   display: none;
 }
 
-.admin-head {
+.settings-panel[hidden] {
+  display: none;
+}
+
+.admin-head,
+.settings-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -531,6 +540,29 @@ legend {
 
 .settings-panel {
   margin-top: 14px;
+  display: grid;
+  gap: 14px;
+}
+
+.about-settings {
+  display: grid;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.about-settings h2 {
+  color: var(--ink);
+}
+
+.about-settings p {
+  margin: 0;
+  font-weight: 750;
+}
+
+.about-settings strong {
+  color: var(--ink);
 }
 
 summary {
@@ -553,12 +585,24 @@ summary {
   .admin-grid,
   .payroll-controls,
   .settings-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
   .calendar-panel,
   .shift-form {
     grid-column: 1 / -1;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .topbar {
+    align-items: stretch;
+  }
+
+  .top-actions {
+    justify-content: flex-start;
   }
 }
 

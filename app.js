@@ -71,7 +71,9 @@ const els = {
   payrollStatus: document.querySelector("#payrollStatus"),
   paySlipList: document.querySelector("#paySlipList"),
   languageSelect: document.querySelector("#languageSelect"),
-  adminToggle: document.querySelector("#adminToggle"),
+  settingsToggle: document.querySelector("#settingsToggle"),
+  settingsPanel: document.querySelector("#settingsPanel"),
+  settingsClose: document.querySelector("#settingsClose"),
   adminPanel: document.querySelector("#adminPanel"),
   adminClose: document.querySelector("#adminClose"),
   dayType: document.querySelector("#dayType"),
@@ -101,8 +103,8 @@ const els = {
 
 const translations = {
   ru: {
-    appKicker: "Учёт работы в Дании",
-    appTitle: "Рабочее время",
+    appKicker: "Учёт смен и зарплатных листов",
+    appTitle: "Mit Arbejde",
     language: "Язык",
     monthSummary: "Итоги всех сохранённых смен",
     hours: "Часы",
@@ -134,7 +136,7 @@ const translations = {
     savedCount: "Сохранено смен",
     beforeTax: "До налога",
     takeHome: "На руку",
-    settings: "Настройки расчёта",
+    settings: "Настройки",
     defaultRate: "Базовая ставка, kr/час",
     sickRate: "Больничные, kr/час",
     fixedDeduction: "ATP/пенсия за месяц, kr",
@@ -198,11 +200,15 @@ const translations = {
     saveAs: "Сохранить как",
     loadPaySlip: "Загрузить",
     paySlipLoaded: "Зарплатный лист загружен в историю",
-    paySlipLoadError: "Не удалось загрузить файл"
+    paySlipLoadError: "Не удалось загрузить файл",
+    aboutApp: "О приложении",
+    appNameLabel: "Название",
+    versionLabel: "Версия",
+    developerLabel: "Разработчик"
   },
   en: {
-    appKicker: "Denmark work tracker",
-    appTitle: "Work time",
+    appKicker: "Work and payslip tracker",
+    appTitle: "Mit Arbejde",
     language: "Language",
     monthSummary: "Summary for all saved shifts",
     hours: "Hours",
@@ -234,7 +240,7 @@ const translations = {
     savedCount: "Saved shifts",
     beforeTax: "Before tax",
     takeHome: "Take-home",
-    settings: "Calculation settings",
+    settings: "Settings",
     defaultRate: "Base rate, kr/hour",
     sickRate: "Sick pay, kr/hour",
     fixedDeduction: "ATP/pension per month, kr",
@@ -298,11 +304,15 @@ const translations = {
     saveAs: "Save as",
     loadPaySlip: "Load",
     paySlipLoaded: "Payslip loaded into history",
-    paySlipLoadError: "Could not load file"
+    paySlipLoadError: "Could not load file",
+    aboutApp: "About app",
+    appNameLabel: "Name",
+    versionLabel: "Version",
+    developerLabel: "Developer"
   },
   da: {
-    appKicker: "Dansk arbejdstid",
-    appTitle: "Arbejdstid",
+    appKicker: "Arbejdstid og lønseddel",
+    appTitle: "Mit Arbejde",
     language: "Sprog",
     monthSummary: "Oversigt for alle gemte vagter",
     hours: "Timer",
@@ -334,7 +344,7 @@ const translations = {
     savedCount: "Gemte vagter",
     beforeTax: "Før skat",
     takeHome: "Udbetalt",
-    settings: "Beregningsindstillinger",
+    settings: "Indstillinger",
     defaultRate: "Grundsats, kr/time",
     sickRate: "Sygedagpenge, kr/time",
     fixedDeduction: "ATP/pension pr. måned, kr",
@@ -398,7 +408,11 @@ const translations = {
     saveAs: "Gem som",
     loadPaySlip: "Indlæs",
     paySlipLoaded: "Lønseddel indlæst i historik",
-    paySlipLoadError: "Kunne ikke indlæse fil"
+    paySlipLoadError: "Kunne ikke indlæse fil",
+    aboutApp: "Om appen",
+    appNameLabel: "Navn",
+    versionLabel: "Version",
+    developerLabel: "Udvikler"
   }
 };
 
@@ -597,7 +611,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v9 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v11 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -806,7 +820,7 @@ function renderAdminLists() {
 function applyLanguage() {
   const language = state.settings.language || "ru";
   document.documentElement.lang = language;
-  document.title = `${tr("appTitle")} DK`;
+  document.title = tr("appTitle");
   els.languageSelect.value = language;
   els.installButton.title = tr("install");
   els.installButton.setAttribute("aria-label", tr("install"));
@@ -1060,11 +1074,19 @@ els.refreshTotalsButton.addEventListener("click", () => {
   renderPaySlips();
 });
 
-els.adminToggle.addEventListener("click", () => {
-  els.adminPanel.hidden = !els.adminPanel.hidden;
+els.settingsToggle.addEventListener("click", () => {
+  const nextHidden = !els.settingsPanel.hidden;
+  els.settingsPanel.hidden = nextHidden;
+  els.adminPanel.hidden = nextHidden;
 });
 
 els.adminClose.addEventListener("click", () => {
+  els.adminPanel.hidden = true;
+  els.settingsPanel.hidden = true;
+});
+
+els.settingsClose.addEventListener("click", () => {
+  els.settingsPanel.hidden = true;
   els.adminPanel.hidden = true;
 });
 

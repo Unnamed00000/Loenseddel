@@ -1,7 +1,7 @@
 {
-  "name": "Рабочее время DK",
-  "short_name": "Работа DK",
-  "description": "Календарь рабочих смен, часов и зарплаты для почасовой работы в Дании.",
+  "name": "Mit Arbejde",
+  "short_name": "Mit Arbejde",
+  "description": "Work shifts, payslips, hours and salary tracker for Denmark.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
