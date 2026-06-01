@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=16">
+    <link rel="stylesheet" href="styles.css?v=17">
   </head>
   <body>
     <div class="app-shell">
@@ -30,7 +30,7 @@
       </header>
 
       <main>
-        <section class="summary-grid" aria-label="Итоги всех сохранённых смен" data-i18n-aria-label="monthSummary">
+        <section class="summary-grid main-view" aria-label="Итоги всех сохранённых смен" data-i18n-aria-label="monthSummary">
           <article>
             <span data-i18n="hours">Часы</span>
             <strong id="totalHours">0 ч</strong>
@@ -49,7 +49,7 @@
           </article>
         </section>
 
-        <section class="workspace">
+        <section class="workspace main-view">
           <div class="calendar-panel">
             <div class="month-toolbar">
               <button class="icon-button" id="prevMonth" type="button" aria-label="Предыдущий месяц" title="Предыдущий месяц" data-i18n-aria-label="prevMonth" data-i18n-title="prevMonth">‹</button>
@@ -131,7 +131,7 @@
           </form>
         </section>
 
-        <section class="saved-total-panel" aria-label="Сумма по сохранённым сменам" data-i18n-aria-label="savedTotals">
+        <section class="saved-total-panel main-view" aria-label="Сумма по сохранённым сменам" data-i18n-aria-label="savedTotals">
           <h2 data-i18n="savedMonth">Все сохранённые смены</h2>
           <p><span data-i18n="savedCount">Сохранено смен</span>: <strong id="savedShiftCount">0</strong></p>
           <p><span data-i18n="beforeTax">До налога</span>: <strong id="savedGrossText">0 kr</strong></p>
@@ -142,7 +142,7 @@
           <div class="saved-shift-list" id="savedShiftList"></div>
         </section>
 
-        <section class="payroll-panel">
+        <section class="payroll-panel main-view">
           <div class="payroll-head">
             <div>
               <p class="eyebrow" data-i18n="payrollKicker">Lønseddel</p>
@@ -295,18 +295,18 @@
 
           <div class="about-settings">
             <h2 data-i18n="aboutApp">О приложении</h2>
-            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.0</strong></p>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.1</strong></p>
             <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
           </div>
         </section>
       </main>
       <footer class="app-footer">
         <h2 data-i18n="aboutApp">О приложении</h2>
-        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.0</strong></p>
+        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.1</strong></p>
         <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
       </footer>
     </div>
 
-    <script src="app.js?v=16"></script>
+    <script src="app.js?v=17"></script>
   </body>
 </html>

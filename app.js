@@ -611,7 +611,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v11 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v17 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1091,15 +1091,17 @@ els.settingsClose.addEventListener("click", () => {
 });
 
 function openSettingsPage() {
-  els.settingsPanel.hidden = false;
-  els.adminPanel.hidden = false;
+  els.settingsPanel.removeAttribute("hidden");
+  els.adminPanel.removeAttribute("hidden");
+  els.settingsToggle.setAttribute("aria-expanded", "true");
   document.body.classList.add("settings-mode");
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "auto" });
 }
 
 function closeSettingsPage() {
   els.settingsPanel.hidden = true;
   els.adminPanel.hidden = true;
+  els.settingsToggle.setAttribute("aria-expanded", "false");
   document.body.classList.remove("settings-mode");
 }
 

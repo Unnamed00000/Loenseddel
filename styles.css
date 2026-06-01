@@ -567,15 +567,17 @@ legend {
 
 .settings-page:not([hidden]) {
   margin-top: 0;
+  width: 100%;
 }
 
-body.settings-mode main > section:not(.settings-page),
+body.settings-mode .main-view,
 body.settings-mode .app-footer {
   display: none;
 }
 
 body.settings-mode .settings-page {
   display: grid;
+  min-height: calc(100vh - 104px);
 }
 
 .settings-only {
