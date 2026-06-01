@@ -950,6 +950,10 @@ function setDefaultPayRange() {
 }
 
 function renderAll() {
+  if (els.adminPanel && els.settingsPanel && !els.settingsPanel.contains(els.adminPanel)) {
+    const about = document.querySelector(".about-settings");
+    els.settingsPanel.insertBefore(els.adminPanel, about);
+  }
   applyLanguage();
   renderSettings();
   setDefaultPayRange();
@@ -1078,11 +1082,7 @@ els.settingsToggle.addEventListener("click", () => {
   const shouldOpen = els.settingsPanel.hidden;
   els.settingsPanel.hidden = !shouldOpen;
   els.adminPanel.hidden = !shouldOpen;
-  if (shouldOpen) {
-    window.requestAnimationFrame(() => {
-      els.settingsPanel.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }
+  if (shouldOpen) els.settingsPanel.focus?.();
 });
 
 els.adminClose.addEventListener("click", () => {

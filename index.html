@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=14">
+    <link rel="stylesheet" href="styles.css?v=15">
   </head>
   <body>
     <div class="app-shell">
@@ -19,7 +19,9 @@
         </div>
         <div class="top-actions">
           <button class="settings-toggle" id="settingsToggle" type="button" aria-label="Настройки" title="Настройки" data-i18n-aria-label="settings" data-i18n-title="settings">
-            <span aria-hidden="true">⚙</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Zm8 3.8-2.1-1.2-.4-1 1-2.2-2.1-2.1-2.2 1-.9-.4L12 4h-3l-1.2 2.1-.9.4-2.2-1-2.1 2.1 1 2.2-.4 1L2 12v3l2.1 1.2.4 1-1 2.2 2.1 2.1 2.2-1 .9.4L10 23h3l1.2-2.1.9-.4 2.2 1 2.1-2.1-1-2.2.4-1L21 15v-3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
           </button>
           <button class="icon-button" id="installButton" type="button" hidden aria-label="Установить приложение" title="Установить">
             <span aria-hidden="true">↓</span>
@@ -305,6 +307,6 @@
       </footer>
     </div>
 
-    <script src="app.js?v=14"></script>
+    <script src="app.js?v=15"></script>
   </body>
 </html>
