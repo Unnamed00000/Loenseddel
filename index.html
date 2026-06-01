@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=18">
+    <link rel="stylesheet" href="styles.css?v=19">
   </head>
   <body>
     <div class="app-shell">
@@ -251,6 +251,32 @@
             </div>
           </section>
 
+          <section class="settings-card">
+            <h3><span aria-hidden="true">🔊</span><span data-i18n="soundVibration">Звук и вибрация</span></h3>
+            <label class="switch-row">
+              <span data-i18n="sound">Звук</span>
+              <input class="switch-input" id="soundEnabled" type="checkbox">
+              <span class="switch-control" aria-hidden="true"></span>
+            </label>
+            <label class="switch-row">
+              <span data-i18n="vibration">Вибрация</span>
+              <input class="switch-input" id="vibrationEnabled" type="checkbox">
+              <span class="switch-control" aria-hidden="true"></span>
+            </label>
+          </section>
+
+          <section class="settings-card">
+            <h3><span aria-hidden="true">🎨</span><span data-i18n="theme">Тема</span></h3>
+            <label class="theme-toggle">
+              <span data-i18n="lightTheme">Светлая</span>
+              <input id="themeToggle" type="checkbox">
+              <span class="theme-track" aria-hidden="true">
+                <span class="theme-thumb"></span>
+              </span>
+              <span data-i18n="darkTheme">Тёмная</span>
+            </label>
+          </section>
+
           <details class="settings-card" open>
             <summary><span aria-hidden="true">🧾</span><span data-i18n="settings">Настройки</span></summary>
             <div class="settings-grid">
@@ -304,18 +330,18 @@
 
           <div class="about-settings settings-card">
             <h2><span aria-hidden="true">ⓘ</span><span data-i18n="aboutApp">О приложении</span></h2>
-            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.2</strong></p>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.3</strong></p>
             <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
           </div>
         </section>
       </main>
       <footer class="app-footer">
         <h2 data-i18n="aboutApp">О приложении</h2>
-        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.2</strong></p>
+        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.3</strong></p>
         <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
       </footer>
     </div>
 
-    <script src="app.js?v=18"></script>
+    <script src="app.js?v=19"></script>
   </body>
 </html>

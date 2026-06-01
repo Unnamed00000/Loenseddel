@@ -24,6 +24,18 @@ body {
   overflow-x: hidden;
 }
 
+body.theme-dark {
+  --bg: #121711;
+  --ink: #f5f0e6;
+  --muted: #b6bcae;
+  --line: #384235;
+  --panel: #1b221b;
+  --accent: #9dcc8f;
+  --accent-2: #e68c64;
+  --sun: #f2c55c;
+  --focus: #79b8ca;
+}
+
 button,
 input,
 select {
@@ -230,7 +242,7 @@ h2 {
   min-height: 48px;
   place-items: center;
   border: 1px solid var(--line);
-  background: white;
+  background: var(--panel);
   color: var(--accent);
   cursor: pointer;
   line-height: 1;
@@ -273,6 +285,11 @@ h2 {
   color: var(--accent);
 }
 
+body.theme-dark .settings-toggle:hover,
+body.theme-dark .settings-close:hover {
+  background: #253122;
+}
+
 .danger {
   color: #9b2f22;
 }
@@ -311,9 +328,14 @@ select {
   min-height: 42px;
   border: 1px solid var(--line);
   border-radius: 7px;
-  background: white;
+  background: var(--panel);
   color: var(--ink);
   padding: 0 11px;
+}
+
+body:not(.theme-dark) input,
+body:not(.theme-dark) select {
+  background: white;
 }
 
 input:focus,
@@ -653,6 +675,102 @@ body.settings-mode .admin-panel {
   gap: 12px;
 }
 
+.switch-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 60px;
+  align-items: center;
+  gap: 12px;
+  min-height: 42px;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.switch-input,
+.theme-toggle input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.switch-control {
+  position: relative;
+  width: 58px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #dfe5dd;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.switch-control::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--panel);
+  box-shadow: 0 4px 10px rgba(31, 37, 33, 0.2);
+  transition: transform 160ms ease;
+}
+
+.switch-input:checked + .switch-control {
+  border-color: var(--accent);
+  background: #2fbf64;
+}
+
+.switch-input:checked + .switch-control::after {
+  transform: translateX(24px);
+}
+
+.theme-toggle {
+  display: grid;
+  grid-template-columns: max-content minmax(120px, 170px) max-content;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 58px;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.theme-track {
+  position: relative;
+  display: block;
+  width: 170px;
+  max-width: 100%;
+  height: 36px;
+  border-radius: 999px;
+  background: #dfe5dd;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.theme-thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #2fbf64;
+  box-shadow: 0 5px 14px rgba(31, 37, 33, 0.22);
+  transition: left 180ms ease;
+}
+
+.theme-toggle input:checked + .theme-track .theme-thumb {
+  left: calc(100% - 32px);
+}
+
+body.theme-dark .switch-control,
+body.theme-dark .theme-track {
+  background: #303b2d;
+}
+
 .settings-card .language-picker {
   width: auto;
 }
@@ -665,6 +783,10 @@ body.settings-mode .admin-panel {
   background: #faf9f4;
   color: var(--ink);
   font-weight: 850;
+}
+
+body.theme-dark .currency-picker input[readonly] {
+  background: #222a20;
 }
 
 body.settings-mode .admin-panel {
@@ -796,8 +918,17 @@ summary::-webkit-details-marker {
   .admin-row,
   .payroll-controls,
   .pay-slip-grid,
+  .theme-toggle,
   .settings-grid {
     grid-template-columns: 1fr;
+  }
+
+  .theme-toggle {
+    justify-items: stretch;
+  }
+
+  .theme-track {
+    width: 100%;
   }
 
   .saved-shift-item {

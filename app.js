@@ -17,7 +17,10 @@ const defaults = {
     nightRate: 0,
     weekendRate: 0,
     overtimePercent: 50,
-    localRate: 0
+    localRate: 0,
+    soundEnabled: true,
+    vibrationEnabled: true,
+    theme: "light"
   },
   customAddons: [],
   customDeductions: [],
@@ -74,6 +77,9 @@ const els = {
   settingsToggle: document.querySelector("#settingsToggle"),
   settingsPanel: document.querySelector("#settingsPanel"),
   settingsClose: document.querySelector("#settingsClose"),
+  soundEnabled: document.querySelector("#soundEnabled"),
+  vibrationEnabled: document.querySelector("#vibrationEnabled"),
+  themeToggle: document.querySelector("#themeToggle"),
   adminPanel: document.querySelector("#adminPanel"),
   adminClose: document.querySelector("#adminClose"),
   dayType: document.querySelector("#dayType"),
@@ -108,6 +114,12 @@ const translations = {
     language: "Язык",
     currency: "Валюта",
     close: "Закрыть",
+    soundVibration: "Звук и вибрация",
+    sound: "Звук",
+    vibration: "Вибрация",
+    theme: "Тема",
+    lightTheme: "Светлая",
+    darkTheme: "Тёмная",
     monthSummary: "Итоги всех сохранённых смен",
     hours: "Часы",
     gross: "Брутто",
@@ -214,6 +226,12 @@ const translations = {
     language: "Language",
     currency: "Currency",
     close: "Close",
+    soundVibration: "Sound and vibration",
+    sound: "Sound",
+    vibration: "Vibration",
+    theme: "Theme",
+    lightTheme: "Light",
+    darkTheme: "Dark",
     monthSummary: "Summary for all saved shifts",
     hours: "Hours",
     gross: "Gross",
@@ -320,6 +338,12 @@ const translations = {
     language: "Sprog",
     currency: "Valuta",
     close: "Luk",
+    soundVibration: "Lyd og vibration",
+    sound: "Lyd",
+    vibration: "Vibration",
+    theme: "Tema",
+    lightTheme: "Lys",
+    darkTheme: "Mørk",
     monthSummary: "Oversigt for alle gemte vagter",
     hours: "Timer",
     gross: "Brutto",
@@ -452,6 +476,40 @@ function saveState() {
   localStorage.setItem(languageKey, state.settings.language || "ru");
 }
 
+function applyTheme() {
+  const isDark = state.settings.theme === "dark";
+  document.body.classList.toggle("theme-dark", isDark);
+  document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+  document.querySelector("meta[name='theme-color']")?.setAttribute("content", isDark ? "#151c17" : "#243c2f");
+}
+
+function giveFeedback(type = "success") {
+  if (state.settings.vibrationEnabled && navigator.vibrate) {
+    navigator.vibrate(type === "delete" ? [28, 24, 28] : 32);
+  }
+
+  if (!state.settings.soundEnabled) return;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+
+  try {
+    const context = new AudioContextClass();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.type = "sine";
+    oscillator.frequency.value = type === "delete" ? 220 : 440;
+    gain.gain.setValueAtTime(0.0001, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.08, context.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.12);
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.14);
+  } catch {
+    // Some browsers block audio until a stronger user gesture.
+  }
+}
+
 function normalizeShiftMap(shifts) {
   if (Array.isArray(shifts)) {
     return shifts.reduce((map, item) => {
@@ -521,6 +579,7 @@ function toId(prefix) {
 
 function getSettingsFromInputs() {
   return {
+    language: state.settings.language || "ru",
     defaultRate: numberValue("defaultRate"),
     sickRate: numberValue("sickRate"),
     holidayPercent: numberValue("holidayPercent"),
@@ -531,7 +590,10 @@ function getSettingsFromInputs() {
     nightRate: numberValue("nightRate"),
     weekendRate: numberValue("weekendRate"),
     overtimePercent: numberValue("overtimePercent"),
-    localRate: numberValue("localRate")
+    localRate: numberValue("localRate"),
+    soundEnabled: els.soundEnabled.checked,
+    vibrationEnabled: els.vibrationEnabled.checked,
+    theme: els.themeToggle.checked ? "dark" : "light"
   };
 }
 
@@ -617,7 +679,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v18 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v19 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -945,8 +1007,15 @@ function selectDate(iso) {
 
 function renderSettings() {
   Object.entries(state.settings).forEach(([key, value]) => {
-    if (els[key]) els[key].value = value;
+    if (!els[key]) return;
+    if (els[key].type === "checkbox") {
+      els[key].checked = Boolean(value);
+    } else {
+      els[key].value = value;
+    }
   });
+  els.themeToggle.checked = state.settings.theme === "dark";
+  applyTheme();
 }
 
 function setDefaultPayRange() {
@@ -961,6 +1030,7 @@ function renderAll() {
     els.settingsPanel.insertBefore(els.adminPanel, about);
   }
   applyLanguage();
+  applyTheme();
   renderSettings();
   setDefaultPayRange();
   selectDate(selectedDate);
@@ -994,6 +1064,7 @@ els.shiftForm.addEventListener("submit", (event) => {
   selectedDate = els.shiftDate.value;
   state.shifts[selectedDate] = getFormShift();
   saveState();
+  giveFeedback("success");
   if (!els.payFromDate.value || selectedDate < els.payFromDate.value) els.payFromDate.value = selectedDate;
   if (!els.payToDate.value || selectedDate > els.payToDate.value) els.payToDate.value = selectedDate;
   selectDate(selectedDate);
@@ -1004,15 +1075,15 @@ els.deleteShift.addEventListener("click", () => {
   if (!state.shifts[selectedDate]) return;
   delete state.shifts[selectedDate];
   saveState();
+  giveFeedback("delete");
   selectDate(selectedDate);
   renderSummary();
 });
 
 document.querySelector(".settings-panel").addEventListener("input", () => {
-  const oldLanguage = state.settings.language;
   state.settings = getSettingsFromInputs();
-  state.settings.language = oldLanguage;
   saveState();
+  applyTheme();
   renderSummary();
   renderCalendar();
   renderShiftPreview();
@@ -1022,6 +1093,7 @@ els.languageSelect.addEventListener("change", () => {
   state.settings.language = els.languageSelect.value;
   localStorage.setItem(languageKey, state.settings.language);
   saveState();
+  applyTheme();
   renderAll();
 });
 
@@ -1040,6 +1112,7 @@ els.createPaySlipButton.addEventListener("click", () => {
     delete state.shifts[date];
   });
   saveState();
+  giveFeedback("success");
   els.payrollStatus.textContent = tr("paySlipCreated");
   els.payFromDate.value = "";
   els.payToDate.value = "";
@@ -1067,6 +1140,7 @@ els.paySlipFileInput.addEventListener("change", async () => {
       state.paySlips.push(slip);
     }
     saveState();
+    giveFeedback("success");
     els.payrollStatus.textContent = tr("paySlipLoaded");
     renderPaySlips();
   } catch {
