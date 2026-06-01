@@ -222,11 +222,26 @@ h2 {
   font-weight: 800;
 }
 
-.admin-toggle,
 .settings-toggle {
+  display: inline-grid;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  place-items: center;
   border: 1px solid var(--line);
+  border-radius: 999px;
   background: white;
   color: var(--accent);
+  cursor: pointer;
+  font-size: 1.28rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.settings-toggle:hover {
+  border-color: var(--accent);
+  background: #eef4ea;
 }
 
 .danger {

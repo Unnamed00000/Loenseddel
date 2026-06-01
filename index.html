@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=13">
+    <link rel="stylesheet" href="styles.css?v=14">
   </head>
   <body>
     <div class="app-shell">
@@ -18,7 +18,9 @@
           <h1 data-i18n="appTitle">Mit Arbejde</h1>
         </div>
         <div class="top-actions">
-          <button class="text-button settings-toggle" id="settingsToggle" type="button" data-i18n="settings">Настройки</button>
+          <button class="settings-toggle" id="settingsToggle" type="button" aria-label="Настройки" title="Настройки" data-i18n-aria-label="settings" data-i18n-title="settings">
+            <span aria-hidden="true">⚙</span>
+          </button>
           <button class="icon-button" id="installButton" type="button" hidden aria-label="Установить приложение" title="Установить">
             <span aria-hidden="true">↓</span>
           </button>
@@ -303,6 +305,6 @@
       </footer>
     </div>
 
-    <script src="app.js?v=13"></script>
+    <script src="app.js?v=14"></script>
   </body>
 </html>
