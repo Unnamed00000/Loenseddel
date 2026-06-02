@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=24">
+    <link rel="stylesheet" href="styles.css?v=25">
   </head>
   <body>
     <div class="app-shell">
@@ -166,64 +166,6 @@
           <div class="pay-slip-list" id="paySlipList"></div>
         </section>
 
-        <section class="admin-panel settings-only" id="adminPanel" hidden>
-          <div class="admin-head">
-            <div>
-              <p class="eyebrow" data-i18n="adminKicker">Admin</p>
-              <h2 data-i18n="adminTitle">Админка расчёта</h2>
-            </div>
-            <button class="text-button" id="adminClose" type="button" data-i18n="exitAdmin">Выйти</button>
-          </div>
-
-          <div class="admin-grid">
-            <div class="admin-box">
-              <h3 data-i18n="customAddonsTitle">Свои доплаты</h3>
-              <div class="admin-row">
-                <label>
-                  <span data-i18n="name">Название</span>
-                  <input id="newAddonName" type="text" maxlength="32" placeholder="Bonus" data-i18n-placeholder="namePlaceholder">
-                </label>
-                <label>
-                  <span data-i18n="value">Значение</span>
-                  <input id="newAddonValue" type="number" min="0" step="0.01" inputmode="decimal" value="0">
-                </label>
-                <label>
-                  <span data-i18n="type">Тип</span>
-                  <select id="newAddonType">
-                    <option value="hourly" data-i18n="hourlyAddon">kr/час</option>
-                    <option value="percent" data-i18n="percentAddon">% от ставки</option>
-                  </select>
-                </label>
-              </div>
-              <button class="primary-button compact" id="addAddonButton" type="button" data-i18n="addAddon">Добавить доплату</button>
-              <div class="admin-list" id="customAddonsList"></div>
-            </div>
-
-            <div class="admin-box">
-              <h3 data-i18n="customDeductionsTitle">Свои удержания</h3>
-              <div class="admin-row">
-                <label>
-                  <span data-i18n="name">Название</span>
-                  <input id="newDeductionName" type="text" maxlength="32" placeholder="Pension" data-i18n-placeholder="deductionPlaceholder">
-                </label>
-                <label>
-                  <span data-i18n="value">Значение</span>
-                  <input id="newDeductionValue" type="number" min="0" step="0.01" inputmode="decimal" value="0">
-                </label>
-                <label>
-                  <span data-i18n="type">Тип</span>
-                  <select id="newDeductionType">
-                    <option value="fixed" data-i18n="fixedDeductionType">kr/месяц</option>
-                    <option value="percent" data-i18n="percentDeductionType">% от брутто</option>
-                  </select>
-                </label>
-              </div>
-              <button class="primary-button compact" id="addDeductionButton" type="button" data-i18n="addDeduction">Добавить удержание</button>
-              <div class="admin-list" id="customDeductionsList"></div>
-            </div>
-          </div>
-        </section>
-
         <section class="settings-panel settings-page" id="settingsPanel" hidden>
           <div class="settings-head">
             <div>
@@ -356,18 +298,18 @@
 
           <div class="about-settings settings-card">
             <h2><span aria-hidden="true">ⓘ</span><span data-i18n="aboutApp">О приложении</span></h2>
-            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.8</strong></p>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.9</strong></p>
             <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
           </div>
         </section>
       </main>
       <footer class="app-footer">
         <h2 data-i18n="aboutApp">О приложении</h2>
-        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.8</strong></p>
+        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.9</strong></p>
         <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
       </footer>
     </div>
 
-    <script src="app.js?v=24"></script>
+    <script src="app.js?v=25"></script>
   </body>
 </html>

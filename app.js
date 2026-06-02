@@ -864,7 +864,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v24 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v25 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1029,6 +1029,7 @@ function describeType(item, kind) {
 }
 
 function renderAdminLists() {
+  if (!els.customAddonsList || !els.customDeductionsList) return;
   els.customAddonsList.replaceChildren();
   if (!state.customAddons.length) {
     const empty = document.createElement("p");
@@ -1354,7 +1355,7 @@ els.settingsToggle.addEventListener("click", () => {
   openSettingsPage();
 });
 
-els.adminClose.addEventListener("click", () => {
+els.adminClose?.addEventListener("click", () => {
   closeSettingsPage();
 });
 
@@ -1388,12 +1389,12 @@ function openSettingsPage() {
 
 function closeSettingsPage() {
   els.settingsPanel.hidden = true;
-  els.adminPanel.hidden = true;
+  if (els.adminPanel) els.adminPanel.hidden = true;
   els.settingsToggle.setAttribute("aria-expanded", "false");
   document.body.classList.remove("settings-mode");
 }
 
-els.addAddonButton.addEventListener("click", () => {
+els.addAddonButton?.addEventListener("click", () => {
   const name = els.newAddonName.value.trim();
   const value = Number.parseFloat(els.newAddonValue.value) || 0;
   if (!name) return;
@@ -1411,7 +1412,7 @@ els.addAddonButton.addEventListener("click", () => {
   renderShiftPreview();
 });
 
-els.addDeductionButton.addEventListener("click", () => {
+els.addDeductionButton?.addEventListener("click", () => {
   const name = els.newDeductionName.value.trim();
   const value = Number.parseFloat(els.newDeductionValue.value) || 0;
   if (!name) return;
