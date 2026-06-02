@@ -132,7 +132,10 @@ const els = {
   overtimePercent: document.querySelector("#overtimePercent"),
   localRate: document.querySelector("#localRate"),
   qualificationAddonRate: document.querySelector("#qualificationAddonRate"),
-  stabilityAddonRate: document.querySelector("#stabilityAddonRate")
+  stabilityAddonRate: document.querySelector("#stabilityAddonRate"),
+  payPdfImportButton: document.querySelector("#payPdfImportButton"),
+  payPdfFileInput: document.querySelector("#payPdfFileInput"),
+  payPdfStatus: document.querySelector("#payPdfStatus")
 };
 
 const translations = {
@@ -170,6 +173,13 @@ const translations = {
     personnelFee: "Personaleforening / удержание",
     qualificationAddonRate: "Kvalifikationstillæg",
     stabilityAddonRate: "Stabilitetstillæg",
+    importPayrollPdf: "Загрузить lønseddel PDF",
+    payPdfHint: "PDF не сохраняется в приложении. Приложение попробует взять ставки и налоги из файла и записать их в эти поля.",
+    payPdfReading: "Читаю PDF...",
+    payPdfNoText: "Не удалось прочитать текст из PDF. Если это скан или фото, нужен OCR.",
+    payPdfNoValues: "Текст прочитан, но нужные ставки и налоги не найдены. Проверьте PDF или заполните поля вручную.",
+    payPdfApplied: "Из PDF применено полей: {count}. {fields}",
+    payPdfError: "Не удалось разобрать PDF. Попробуйте другой файл или заполните поля вручную.",
     theme: "Тема",
     lightTheme: "Светлая",
     darkTheme: "Тёмная",
@@ -307,6 +317,13 @@ const translations = {
     personnelFee: "Staff association / deduction",
     qualificationAddonRate: "Qualification add-on",
     stabilityAddonRate: "Stability add-on",
+    importPayrollPdf: "Load lønseddel PDF",
+    payPdfHint: "The PDF is not stored in the app. The app will try to read rates and tax values and write them into these fields.",
+    payPdfReading: "Reading PDF...",
+    payPdfNoText: "Could not read text from the PDF. If it is a scan or photo, OCR is needed.",
+    payPdfNoValues: "Text was read, but no useful rates or tax values were found. Check the PDF or fill the fields manually.",
+    payPdfApplied: "Applied fields from PDF: {count}. {fields}",
+    payPdfError: "Could not parse the PDF. Try another file or fill the fields manually.",
     theme: "Theme",
     lightTheme: "Light",
     darkTheme: "Dark",
@@ -444,6 +461,13 @@ const translations = {
     personnelFee: "Personaleforening / fradrag",
     qualificationAddonRate: "Kvalifikationstillæg",
     stabilityAddonRate: "Stabilitetstillæg",
+    importPayrollPdf: "Indlæs lønseddel PDF",
+    payPdfHint: "PDF'en gemmes ikke i appen. Appen forsøger at hente satser og skatteværdier og skrive dem i disse felter.",
+    payPdfReading: "Læser PDF...",
+    payPdfNoText: "Kunne ikke læse tekst fra PDF'en. Hvis den er en scanning eller et foto, kræves OCR.",
+    payPdfNoValues: "Teksten blev læst, men der blev ikke fundet brugbare satser eller skatteværdier. Tjek PDF'en eller udfyld felterne manuelt.",
+    payPdfApplied: "Anvendte felter fra PDF: {count}. {fields}",
+    payPdfError: "Kunne ikke analysere PDF'en. Prøv en anden fil eller udfyld felterne manuelt.",
     theme: "Tema",
     lightTheme: "Lys",
     darkTheme: "Mørk",
@@ -584,6 +608,13 @@ translations.ka = {
   personnelFee: "პერსონალის გაერთიანება / დაქვითვა",
   qualificationAddonRate: "კვალიფიკაციის დანამატი",
   stabilityAddonRate: "სტაბილურობის დანამატი",
+  importPayrollPdf: "lønseddel PDF-ის ჩატვირთვა",
+  payPdfHint: "PDF აპში არ ინახება. აპი სცდის ტარიფებისა და გადასახადების წაკითხვას და ამ ველებში ჩაწერას.",
+  payPdfReading: "PDF იკითხება...",
+  payPdfNoText: "PDF-დან ტექსტის წაკითხვა ვერ მოხერხდა. თუ ეს სკანი ან ფოტოა, საჭიროა OCR.",
+  payPdfNoValues: "ტექსტი წაკითხულია, მაგრამ საჭირო ტარიფები და გადასახადები ვერ მოიძებნა. შეამოწმეთ PDF ან შეავსეთ ველები ხელით.",
+  payPdfApplied: "PDF-დან გამოყენებული ველები: {count}. {fields}",
+  payPdfError: "PDF-ის დამუშავება ვერ მოხერხდა. სცადეთ სხვა ფაილი ან შეავსეთ ველები ხელით.",
   theme: "თემა",
   lightTheme: "ღია",
   darkTheme: "მუქი",
@@ -826,6 +857,263 @@ function numberValue(id) {
   return Number.parseFloat(els[id].value) || 0;
 }
 
+function parseDanishNumber(value) {
+  if (!value) return null;
+  const cleaned = String(value)
+    .replace(/\s/g, "")
+    .replace(/[^\d,.-]/g, "");
+  if (!cleaned || !/\d/.test(cleaned)) return null;
+  const negative = cleaned.includes("-");
+  const normalized = cleaned
+    .replace(/-/g, "")
+    .replace(/\.(?=\d{3}(?:[,.]|$))/g, "")
+    .replace(",", ".");
+  const number = Number.parseFloat(normalized);
+  if (!Number.isFinite(number)) return null;
+  return negative ? -number : number;
+}
+
+function formatInputNumber(value) {
+  return String(Math.round(Number(value) * 100) / 100);
+}
+
+function numbersFromText(text) {
+  return [...String(text).matchAll(/-?\d{1,3}(?:[.\s]\d{3})*(?:,\d+)?|-?\d+(?:[.,]\d+)?/g)]
+    .map((match) => parseDanishNumber(match[0]))
+    .filter((value) => Number.isFinite(value));
+}
+
+function pickHourlyRate(numbers) {
+  const rates = numbers.filter((value) => value >= 50 && value <= 500);
+  if (rates.length >= 2) return rates[rates.length - 1];
+  if (rates.length === 1) return rates[0];
+  return null;
+}
+
+function pickAddonRate(numbers) {
+  const rates = numbers.filter((value) => value > 0 && value <= 100);
+  if (rates.length >= 2) return rates[rates.length - 1];
+  return null;
+}
+
+function pickLineAmount(numbers) {
+  if (!numbers.length) return null;
+  const values = numbers.map((value) => Math.abs(value)).filter((value) => value > 0);
+  return values.length ? values[values.length - 1] : null;
+}
+
+function pickPercent(line) {
+  const percentMatch = String(line).match(/(-?\d+(?:[.,]\d+)?)\s*%/);
+  if (percentMatch) return parseDanishNumber(percentMatch[1]);
+  const numbers = numbersFromText(line).map((value) => Math.abs(value));
+  const likely = numbers.find((value) => value > 0 && value <= 100);
+  return likely ?? null;
+}
+
+function findPayrollLine(lines, patterns, rejectPatterns = []) {
+  return lines.find((line) => {
+    const lower = line.toLowerCase();
+    return patterns.some((pattern) => pattern.test(lower)) && !rejectPatterns.some((pattern) => pattern.test(lower));
+  }) || "";
+}
+
+function setDetectedValue(target, key, value) {
+  if (!Number.isFinite(value) || value < 0) return;
+  target[key] = Math.round(value * 100) / 100;
+}
+
+function detectPayrollSettings(text) {
+  const normalized = String(text || "")
+    .replace(/\u00a0/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\r/g, "\n");
+  const lines = normalized
+    .split(/\n| {3,}/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const detected = {};
+
+  const hourlyLine = findPayrollLine(lines, [/timeløn/, /grundløn/], [/uden løn/, /nettoløn/]);
+  setDetectedValue(detected, "defaultRate", pickHourlyRate(numbersFromText(hourlyLine)));
+
+  const sickLine = findPayrollLine(lines, [/syg.*løn/, /sygedagpenge/], [/uden løn/]);
+  setDetectedValue(detected, "sickRate", pickHourlyRate(numbersFromText(sickLine)));
+
+  const holidayLine = findPayrollLine(lines, [/feriepengeopsparing/, /feriepenge/], [/nettoferiepenge/]);
+  setDetectedValue(detected, "holidayPercent", pickPercent(holidayLine));
+
+  const amLine = findPayrollLine(lines, [/am-bidrag/, /arbejdsmarkedsbidrag/]);
+  setDetectedValue(detected, "amPercent", pickPercent(amLine));
+
+  const taxLine = findPayrollLine(lines, [/a-skat/, /trækprocent/, /traekprocent/, /træk%/, /traek%/]);
+  const rawTax = pickPercent(taxLine);
+  setDetectedValue(detected, "taxPercent", rawTax && rawTax <= 1 ? rawTax * 100 : rawTax);
+
+  const allowanceLine = findPayrollLine(lines, [/skattefradrag/, /anvendt.*fradrag/, /fradrag/], [/feriefradrag/]);
+  const allowanceNumbers = numbersFromText(allowanceLine).map((value) => Math.abs(value));
+  const allowance = allowanceNumbers.filter((value) => value >= 100).sort((a, b) => b - a)[0];
+  setDetectedValue(detected, "taxFreeAllowance", allowance);
+
+  const atpLine = findPayrollLine(lines, [/atp-bidrag/, /\batp\b/]);
+  setDetectedValue(detected, "atpContribution", pickLineAmount(numbersFromText(atpLine)));
+
+  const employeePensionLine = findPayrollLine(lines, [/medarb.*pension/, /egen andel/, /medarbejder.*pension/]);
+  setDetectedValue(detected, "employeePensionPercent", pickPercent(employeePensionLine));
+
+  const employerPensionLine = findPayrollLine(lines, [/firma.*pension/, /arbejdsgiver.*pension/, /firmapension/]);
+  setDetectedValue(detected, "employerPensionPercent", pickPercent(employerPensionLine));
+
+  const personnelLine = findPayrollLine(lines, [/personaleforening/, /personale.*fradrag/, /personale.*udlæg/]);
+  setDetectedValue(detected, "personnelFee", pickLineAmount(numbersFromText(personnelLine)));
+
+  const qualificationLine = findPayrollLine(lines, [/kvalifikationstillæg/, /kvalifikationstillaeg/]);
+  setDetectedValue(detected, "qualificationAddonRate", pickAddonRate(numbersFromText(qualificationLine)));
+
+  const stabilityLine = findPayrollLine(lines, [/stabilitetstillæg/, /stabilitetstillaeg/]);
+  setDetectedValue(detected, "stabilityAddonRate", pickAddonRate(numbersFromText(stabilityLine)));
+
+  return detected;
+}
+
+function settingLabel(key) {
+  const labels = {
+    defaultRate: "defaultRate",
+    sickRate: "sickRate",
+    holidayPercent: "feriepengeRate",
+    taxFreeAllowance: "taxFreeAllowance",
+    amPercent: "AM-bidrag",
+    taxPercent: "A-skat",
+    atpContribution: "atpContribution",
+    employeePensionPercent: "employeePensionPercent",
+    employerPensionPercent: "employerPensionPercent",
+    personnelFee: "personnelFee",
+    qualificationAddonRate: "qualificationAddonRate",
+    stabilityAddonRate: "stabilityAddonRate"
+  };
+  return translations[state.settings.language || "ru"]?.[labels[key]] || labels[key] || key;
+}
+
+function applyPayrollSettings(detected) {
+  const applied = [];
+  Object.entries(detected).forEach(([key, value]) => {
+    if (!els[key] || !Number.isFinite(value)) return;
+    els[key].value = formatInputNumber(value);
+    state.settings[key] = value;
+    applied.push(settingLabel(key));
+  });
+  if (!applied.length) return applied;
+  saveState();
+  renderSettings();
+  renderSummary();
+  renderCalendar();
+  renderShiftPreview();
+  return applied;
+}
+
+function bytesToBinary(bytes) {
+  let result = "";
+  for (let index = 0; index < bytes.length; index += 8192) {
+    result += String.fromCharCode(...bytes.slice(index, index + 8192));
+  }
+  return result;
+}
+
+function decodePdfLiteral(value) {
+  return value
+    .slice(1, -1)
+    .replace(/\\([nrtbf()\\])/g, (_, char) => ({ n: "\n", r: "\r", t: "\t", b: "\b", f: "\f", "(": "(", ")": ")", "\\": "\\" }[char] || char))
+    .replace(/\\(\d{1,3})/g, (_, octal) => String.fromCharCode(Number.parseInt(octal, 8)));
+}
+
+function extractPdfTextFromContent(content) {
+  const parts = [];
+  const literalMatches = content.match(/\((?:\\.|[^\\()])*\)/g) || [];
+  literalMatches.forEach((value) => parts.push(decodePdfLiteral(value)));
+  const hexMatches = content.match(/<([0-9A-Fa-f\s]{4,})>/g) || [];
+  hexMatches.forEach((value) => {
+    const hex = value.slice(1, -1).replace(/\s/g, "");
+    let decoded = "";
+    for (let index = 0; index < hex.length - 1; index += 2) {
+      const code = Number.parseInt(hex.slice(index, index + 2), 16);
+      if (code >= 32 && code <= 255) decoded += String.fromCharCode(code);
+    }
+    if (decoded.trim()) parts.push(decoded);
+  });
+  return parts.join(" ");
+}
+
+async function inflatePdfStream(binary) {
+  if (!("DecompressionStream" in window)) return "";
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0) & 255);
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate"));
+  const buffer = await new Response(stream).arrayBuffer();
+  return bytesToBinary(new Uint8Array(buffer));
+}
+
+async function extractPdfTextFallback(arrayBuffer) {
+  const raw = bytesToBinary(new Uint8Array(arrayBuffer));
+  const parts = [extractPdfTextFromContent(raw)];
+  const streamRegex = /<<(?:.|\n|\r){0,2500}?>>\s*stream\r?\n?([\s\S]*?)\r?\n?endstream/g;
+  const streams = [...raw.matchAll(streamRegex)];
+  for (const match of streams) {
+    const full = match[0];
+    const stream = match[1];
+    if (/\/FlateDecode/.test(full)) {
+      try {
+        parts.push(extractPdfTextFromContent(await inflatePdfStream(stream)));
+      } catch {
+        // Some PDFs use filters this lightweight fallback cannot decompress.
+      }
+    } else {
+      parts.push(extractPdfTextFromContent(stream));
+    }
+  }
+  return parts.join("\n").replace(/\s{2,}/g, " ");
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[src="${src}"]`);
+    if (existing) {
+      existing.addEventListener("load", resolve, { once: true });
+      existing.addEventListener("error", reject, { once: true });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.append(script);
+  });
+}
+
+async function extractPdfTextWithPdfJs(arrayBuffer) {
+  if (!window.pdfjsLib) {
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+  }
+  const pdfjsLib = window.pdfjsLib;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+  const pages = [];
+  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+    const page = await pdf.getPage(pageNumber);
+    const content = await page.getTextContent();
+    pages.push(content.items.map((item) => item.str).join(" "));
+  }
+  return pages.join("\n");
+}
+
+async function extractPdfText(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  try {
+    const text = await extractPdfTextWithPdfJs(arrayBuffer.slice(0));
+    if (text.trim()) return text;
+  } catch {
+    // Fall back to a local lightweight reader when PDF.js cannot load.
+  }
+  return extractPdfTextFallback(arrayBuffer);
+}
+
 function toId(prefix) {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -953,7 +1241,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v28 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v29 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1433,6 +1721,33 @@ els.paySlipFileInput.addEventListener("change", async () => {
     els.payrollStatus.textContent = tr("paySlipLoadError");
   } finally {
     els.paySlipFileInput.value = "";
+  }
+});
+
+els.payPdfImportButton?.addEventListener("click", () => {
+  els.payPdfFileInput.click();
+});
+
+els.payPdfFileInput?.addEventListener("change", async () => {
+  const file = els.payPdfFileInput.files?.[0];
+  if (!file) return;
+  els.payPdfStatus.textContent = tr("payPdfReading");
+  try {
+    const text = await extractPdfText(file);
+    if (!text.trim()) {
+      els.payPdfStatus.textContent = tr("payPdfNoText");
+      return;
+    }
+    const detected = detectPayrollSettings(text);
+    const applied = applyPayrollSettings(detected);
+    giveFeedback(applied.length ? "success" : "delete");
+    els.payPdfStatus.textContent = applied.length
+      ? tr("payPdfApplied").replace("{count}", String(applied.length)).replace("{fields}", applied.join(", "))
+      : tr("payPdfNoValues");
+  } catch {
+    els.payPdfStatus.textContent = tr("payPdfError");
+  } finally {
+    els.payPdfFileInput.value = "";
   }
 });
 

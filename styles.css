@@ -897,6 +897,28 @@ body.theme-dark .settings-test-button {
   background: #222a20;
 }
 
+.pdf-import-box {
+  display: grid;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.pdf-import-button {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #faf9f4;
+  color: var(--ink);
+}
+
+body.theme-dark .pdf-import-button {
+  background: #222a20;
+}
+
+.pdf-import-box .settings-note {
+  margin: 0;
+}
+
 .install-details {
   display: grid;
   gap: 10px;
