@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=26">
+    <link rel="stylesheet" href="styles.css?v=27">
   </head>
   <body>
     <div class="app-shell">
@@ -122,8 +122,18 @@
             </label>
 
             <div class="shift-result">
-              <span id="shiftHours">0 ч</span>
-              <strong id="shiftPay">0 kr</strong>
+              <div>
+                <span data-i18n="hours">Часы</span>
+                <strong id="shiftHours">0 ч</strong>
+              </div>
+              <div>
+                <span data-i18n="beforeTax">До налога</span>
+                <strong id="shiftPay">0 kr</strong>
+              </div>
+              <div>
+                <span data-i18n="takeHome">На руку</span>
+                <strong id="shiftNetPay">0 kr</strong>
+              </div>
             </div>
             <p class="save-status" id="saveStatus">Не сохранено</p>
 
@@ -341,18 +351,18 @@
 
           <div class="about-settings settings-card">
             <h2><span aria-hidden="true">ⓘ</span><span data-i18n="aboutApp">О приложении</span></h2>
-            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.10</strong></p>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.11</strong></p>
             <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
           </div>
         </section>
       </main>
       <footer class="app-footer">
         <h2 data-i18n="aboutApp">О приложении</h2>
-        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.10</strong></p>
+        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.11</strong></p>
         <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
       </footer>
     </div>
 
-    <script src="app.js?v=26"></script>
+    <script src="app.js?v=27"></script>
   </body>
 </html>

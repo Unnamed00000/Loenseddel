@@ -58,8 +58,7 @@ button {
 
 .topbar,
 .month-toolbar,
-.form-head,
-.shift-result {
+.form-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -424,13 +423,29 @@ legend {
 }
 
 .shift-result {
-  min-height: 54px;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.shift-result div {
+  display: grid;
+  gap: 5px;
+  min-height: 74px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #eef4ea;
 }
 
 .shift-result strong {
-  font-size: 1.5rem;
+  display: block;
+  font-size: clamp(1.05rem, 4vw, 1.35rem);
+  overflow-wrap: anywhere;
+}
+
+body.theme-dark .shift-result div {
+  background: #253a29;
 }
 
 .save-status {
@@ -1040,6 +1055,7 @@ summary::-webkit-details-marker {
   .admin-grid,
   .admin-row,
   .payroll-controls,
+  .shift-result,
   .pay-slip-grid,
   .settings-grid {
     grid-template-columns: 1fr;

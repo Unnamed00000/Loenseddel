@@ -73,6 +73,7 @@ const els = {
   note: document.querySelector("#note"),
   shiftHours: document.querySelector("#shiftHours"),
   shiftPay: document.querySelector("#shiftPay"),
+  shiftNetPay: document.querySelector("#shiftNetPay"),
   saveStatus: document.querySelector("#saveStatus"),
   savedShiftCount: document.querySelector("#savedShiftCount"),
   savedGrossText: document.querySelector("#savedGrossText"),
@@ -915,27 +916,28 @@ function calculateShiftEntries(entries) {
   );
 }
 
-function calculateNet(gross) {
+function calculateNet(gross, settings = state.settings) {
   const customDeductions = state.customDeductions.reduce((sum, deduction) => {
     const value = Number(deduction.value) || 0;
     return sum + (deduction.type === "percent" ? gross * (value / 100) : value);
   }, 0);
-  const employeePension = gross * ((Number(state.settings.employeePensionPercent) || 0) / 100);
-  const atp = Number(state.settings.atpContribution) || 0;
-  const personnelFee = Number(state.settings.personnelFee) || 0;
-  const afterFixed = Math.max(0, gross - employeePension - atp - personnelFee - state.settings.fixedDeduction - customDeductions);
-  const am = afterFixed * (state.settings.amPercent / 100);
+  const employeePension = gross * ((Number(settings.employeePensionPercent) || 0) / 100);
+  const atp = Number(settings.atpContribution) || 0;
+  const personnelFee = Number(settings.personnelFee) || 0;
+  const fixedDeduction = Number(settings.fixedDeduction) || 0;
+  const afterFixed = Math.max(0, gross - employeePension - atp - personnelFee - fixedDeduction - customDeductions);
+  const am = afterFixed * ((Number(settings.amPercent) || 0) / 100);
   const taxable = Math.max(0, afterFixed - am);
-  const taxableAfterAllowance = Math.max(0, taxable - (Number(state.settings.taxFreeAllowance) || 0));
-  const tax = taxableAfterAllowance * (state.settings.taxPercent / 100);
+  const taxableAfterAllowance = Math.max(0, taxable - (Number(settings.taxFreeAllowance) || 0));
+  const tax = taxableAfterAllowance * ((Number(settings.taxPercent) || 0) / 100);
   return Math.max(0, taxable - tax);
 }
 
-function calculatePay(gross) {
+function calculatePay(gross, settings = state.settings) {
   return {
     gross,
-    holiday: gross * (state.settings.holidayPercent / 100),
-    net: calculateNet(gross)
+    holiday: gross * ((Number(settings.holidayPercent) || 0) / 100),
+    net: calculateNet(gross, settings)
   };
 }
 
@@ -951,7 +953,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v26 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v27 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1240,9 +1242,12 @@ function getFormShift() {
 }
 
 function renderShiftPreview() {
-  const calc = calculateShift(getFormShift(), getSettingsFromInputs());
+  const settings = getSettingsFromInputs();
+  const calc = calculateShift(getFormShift(), settings);
+  const pay = calculatePay(calc.gross, settings);
   els.shiftHours.textContent = hoursText(calc.hours);
   els.shiftPay.textContent = money(calc.gross);
+  els.shiftNetPay.textContent = money(pay.net);
 }
 
 function selectDate(iso) {
