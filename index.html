@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=29">
+    <link rel="stylesheet" href="styles.css?v=30">
   </head>
   <body>
     <div class="app-shell">
@@ -148,7 +148,7 @@
           <p><span data-i18n="takeHome">На руку</span>: <strong id="savedNetText">0 kr</strong></p>
           <p class="hint" data-i18n="savedPersistenceHint">Смены сохраняются после закрытия и остаются здесь, пока вы не удалите их или не создадите зарплатный лист.</p>
           <button class="text-button refresh-button" id="refreshTotalsButton" type="button" data-i18n="refreshTotals">Обновить итоги</button>
-          <p class="debug-line" id="debugLine">v29</p>
+          <p class="debug-line" id="debugLine">v30</p>
           <div class="saved-shift-list" id="savedShiftList"></div>
         </section>
 
@@ -338,6 +338,10 @@
                 <input id="localRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
               </label>
               <label>
+                <span data-i18n="meetingAddonRate">Mødetillæg</span>
+                <input id="meetingAddonRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+              </label>
+              <label>
                 <span data-i18n="qualificationAddonRate">Kvalifikationstillæg</span>
                 <input id="qualificationAddonRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
               </label>
@@ -356,18 +360,18 @@
 
           <div class="about-settings settings-card">
             <h2><span aria-hidden="true">ⓘ</span><span data-i18n="aboutApp">О приложении</span></h2>
-            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.13</strong></p>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.14</strong></p>
             <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
           </div>
         </section>
       </main>
       <footer class="app-footer">
         <h2 data-i18n="aboutApp">О приложении</h2>
-        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.13</strong></p>
+        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.14</strong></p>
         <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
       </footer>
     </div>
 
-    <script src="app.js?v=29"></script>
+    <script src="app.js?v=30"></script>
   </body>
 </html>

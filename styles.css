@@ -238,6 +238,19 @@ body.theme-dark .day-button.is-sick {
   font-weight: 800;
 }
 
+.week-number {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  max-width: calc(100% - 34px);
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 850;
+  line-height: 1;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
 .day-meta {
   width: 100%;
   color: var(--accent);

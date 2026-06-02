@@ -27,6 +27,7 @@ const defaults = {
     weekendRate: 0,
     overtimePercent: 50,
     localRate: 0,
+    meetingAddonRate: 0,
     qualificationAddonRate: 0,
     stabilityAddonRate: 0,
     soundEnabled: true,
@@ -131,6 +132,7 @@ const els = {
   weekendRate: document.querySelector("#weekendRate"),
   overtimePercent: document.querySelector("#overtimePercent"),
   localRate: document.querySelector("#localRate"),
+  meetingAddonRate: document.querySelector("#meetingAddonRate"),
   qualificationAddonRate: document.querySelector("#qualificationAddonRate"),
   stabilityAddonRate: document.querySelector("#stabilityAddonRate"),
   payPdfImportButton: document.querySelector("#payPdfImportButton"),
@@ -171,6 +173,7 @@ const translations = {
     employeePensionPercent: "Пенсия работника, %",
     employerPensionPercent: "Пенсия работодателя, %",
     personnelFee: "Personaleforening / удержание",
+    meetingAddonRate: "Mødetillæg, в час",
     qualificationAddonRate: "Kvalifikationstillæg",
     stabilityAddonRate: "Stabilitetstillæg",
     importPayrollPdf: "Загрузить lønseddel PDF",
@@ -213,6 +216,7 @@ const translations = {
     savedCount: "Сохранено смен",
     beforeTax: "До налога",
     takeHome: "На руку",
+    weekShort: "Нед.",
     settings: "Настройки",
     defaultRate: "Базовая ставка, в час",
     sickRate: "Больничные, в час",
@@ -315,6 +319,7 @@ const translations = {
     employeePensionPercent: "Employee pension, %",
     employerPensionPercent: "Employer pension, %",
     personnelFee: "Staff association / deduction",
+    meetingAddonRate: "Attendance add-on per hour",
     qualificationAddonRate: "Qualification add-on",
     stabilityAddonRate: "Stability add-on",
     importPayrollPdf: "Load lønseddel PDF",
@@ -357,6 +362,7 @@ const translations = {
     savedCount: "Saved shifts",
     beforeTax: "Before tax",
     takeHome: "Take-home",
+    weekShort: "Week",
     settings: "Settings",
     defaultRate: "Base rate per hour",
     sickRate: "Sick pay per hour",
@@ -459,6 +465,7 @@ const translations = {
     employeePensionPercent: "Medarbejderpension, %",
     employerPensionPercent: "Arbejdsgiverpension, %",
     personnelFee: "Personaleforening / fradrag",
+    meetingAddonRate: "Mødetillæg pr. time",
     qualificationAddonRate: "Kvalifikationstillæg",
     stabilityAddonRate: "Stabilitetstillæg",
     importPayrollPdf: "Indlæs lønseddel PDF",
@@ -501,6 +508,7 @@ const translations = {
     savedCount: "Gemte vagter",
     beforeTax: "Før skat",
     takeHome: "Udbetalt",
+    weekShort: "Uge",
     settings: "Indstillinger",
     defaultRate: "Grundsats pr. time",
     sickRate: "Sygedagpenge pr. time",
@@ -606,6 +614,7 @@ translations.ka = {
   employeePensionPercent: "თანამშრომლის პენსია, %",
   employerPensionPercent: "დამსაქმებლის პენსია, %",
   personnelFee: "პერსონალის გაერთიანება / დაქვითვა",
+  meetingAddonRate: "დასწრების დანამატი, საათში",
   qualificationAddonRate: "კვალიფიკაციის დანამატი",
   stabilityAddonRate: "სტაბილურობის დანამატი",
   importPayrollPdf: "lønseddel PDF-ის ჩატვირთვა",
@@ -648,6 +657,7 @@ translations.ka = {
   savedCount: "შენახული ცვლები",
   beforeTax: "გადასახადამდე",
   takeHome: "ხელზე",
+  weekShort: "კვირა",
   settings: "პარამეტრები",
   defaultRate: "ძირითადი ტარიფი, საათში",
   sickRate: "ავადმყოფობის ანაზღაურება, საათში",
@@ -840,6 +850,14 @@ function toISODate(date) {
   return fixed.toISOString().slice(0, 10);
 }
 
+function isoWeekNumber(date) {
+  const fixed = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = fixed.getUTCDay() || 7;
+  fixed.setUTCDate(fixed.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(fixed.getUTCFullYear(), 0, 1));
+  return Math.ceil(((fixed - yearStart) / 86400000 + 1) / 7);
+}
+
 function money(value) {
   const amount = Number.isFinite(Number(value)) ? Number(value) : 0;
   return new Intl.NumberFormat(activeLocale(), {
@@ -966,6 +984,12 @@ function detectPayrollSettings(text) {
   const personnelLine = findPayrollLine(lines, [/personaleforening/, /personale.*fradrag/, /personale.*udlæg/]);
   setDetectedValue(detected, "personnelFee", pickLineAmount(numbersFromText(personnelLine)));
 
+  const localLine = findPayrollLine(lines, [/lokaltillæg/, /lokaltillaeg/, /lokal.*tillæg/, /lokal.*tillaeg/]);
+  setDetectedValue(detected, "localRate", pickAddonRate(numbersFromText(localLine)));
+
+  const meetingLine = findPayrollLine(lines, [/mødetillæg/, /moedetillæg/, /mødetillaeg/, /moedetillaeg/, /møde.*tillæg/, /moede.*tillaeg/]);
+  setDetectedValue(detected, "meetingAddonRate", pickAddonRate(numbersFromText(meetingLine)));
+
   const qualificationLine = findPayrollLine(lines, [/kvalifikationstillæg/, /kvalifikationstillaeg/]);
   setDetectedValue(detected, "qualificationAddonRate", pickAddonRate(numbersFromText(qualificationLine)));
 
@@ -987,6 +1011,8 @@ function settingLabel(key) {
     employeePensionPercent: "employeePensionPercent",
     employerPensionPercent: "employerPensionPercent",
     personnelFee: "personnelFee",
+    localRate: "localRate",
+    meetingAddonRate: "meetingAddonRate",
     qualificationAddonRate: "qualificationAddonRate",
     stabilityAddonRate: "stabilityAddonRate"
   };
@@ -1098,7 +1124,18 @@ async function extractPdfTextWithPdfJs(arrayBuffer) {
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
     const page = await pdf.getPage(pageNumber);
     const content = await page.getTextContent();
-    pages.push(content.items.map((item) => item.str).join(" "));
+    const lines = new Map();
+    content.items.forEach((item) => {
+      const y = Math.round(item.transform?.[5] || 0);
+      if (!lines.has(y)) lines.set(y, []);
+      lines.get(y).push(item.str);
+    });
+    pages.push(
+      [...lines.entries()]
+        .sort(([a], [b]) => b - a)
+        .map(([, parts]) => parts.join(" "))
+        .join("\n")
+    );
   }
   return pages.join("\n");
 }
@@ -1141,6 +1178,7 @@ function getSettingsFromInputs() {
     weekendRate: numberValue("weekendRate"),
     overtimePercent: numberValue("overtimePercent"),
     localRate: numberValue("localRate"),
+    meetingAddonRate: numberValue("meetingAddonRate"),
     qualificationAddonRate: numberValue("qualificationAddonRate"),
     stabilityAddonRate: numberValue("stabilityAddonRate"),
     soundEnabled: els.soundEnabled.checked,
@@ -1177,6 +1215,7 @@ function calculateShift(shift, settings = state.settings) {
     (shift.nightAddon ? settings.nightRate : 0) +
     (shift.weekendAddon ? settings.weekendRate : 0) +
     (shift.localAddon ? settings.localRate : 0) +
+    Number(settings.meetingAddonRate || 0) +
     Number(settings.qualificationAddonRate || 0) +
     Number(settings.stabilityAddonRate || 0);
   const customAddonTotal = state.customAddons.reduce((sum, addon) => {
@@ -1241,7 +1280,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v29 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v30 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1499,7 +1538,9 @@ function renderCalendar() {
     if (iso === selectedDate) button.classList.add("is-selected");
     if (shift) button.classList.add("has-shift");
     if (shift?.dayType === "sick") button.classList.add("is-sick");
+    const weekBadge = day.getDay() === 1 ? `<span class="week-number">${tr("weekShort")} ${isoWeekNumber(day)}</span>` : "";
     button.innerHTML = `
+      ${weekBadge}
       <span class="day-number">${day.getDate()}</span>
       <span class="day-meta">${shift ? `${shift.dayType === "sick" ? tr("sickShort") : tr("workShort")} · ${hoursText(calc.hours)} · ${money(calc.gross)}` : ""}</span>
     `;
