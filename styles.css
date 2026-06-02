@@ -220,8 +220,18 @@ body.theme-dark .day-button.is-selected {
   background: #eef4ea;
 }
 
+.day-button.is-sick {
+  border-color: #d9a59b;
+  background: #fdebe7;
+}
+
 body.theme-dark .day-button.has-shift {
   background: #253a29;
+}
+
+body.theme-dark .day-button.is-sick {
+  border-color: #7e3b32;
+  background: #3a211d;
 }
 
 .day-number {
@@ -238,6 +248,14 @@ body.theme-dark .day-button.has-shift {
 
 body.theme-dark .day-meta {
   color: #b9dfa9;
+}
+
+.day-button.is-sick .day-meta {
+  color: #a33529;
+}
+
+body.theme-dark .day-button.is-sick .day-meta {
+  color: #f0a094;
 }
 
 .icon-button,

@@ -953,7 +953,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v27 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v28 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1210,6 +1210,7 @@ function renderCalendar() {
     if (day.getMonth() !== month) button.classList.add("is-muted");
     if (iso === selectedDate) button.classList.add("is-selected");
     if (shift) button.classList.add("has-shift");
+    if (shift?.dayType === "sick") button.classList.add("is-sick");
     button.innerHTML = `
       <span class="day-number">${day.getDate()}</span>
       <span class="day-meta">${shift ? `${shift.dayType === "sick" ? tr("sickShort") : tr("workShort")} · ${hoursText(calc.hours)} · ${money(calc.gross)}` : ""}</span>
