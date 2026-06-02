@@ -699,9 +699,8 @@ body.settings-mode .admin-panel {
   padding: 14px;
 }
 
-.settings-card h3,
 .settings-card h2,
-.settings-card summary {
+.settings-card > summary {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -709,6 +708,30 @@ body.settings-mode .admin-panel {
   color: var(--ink);
   font-size: 1rem;
   font-weight: 900;
+}
+
+.settings-card > summary {
+  cursor: pointer;
+  min-height: 34px;
+}
+
+.settings-card > summary::after {
+  content: "›";
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 1.45rem;
+  line-height: 1;
+  transform: rotate(0deg);
+  transition: transform 160ms ease;
+}
+
+.settings-card[open] > summary::after {
+  transform: rotate(90deg);
+}
+
+.settings-card[open] > summary {
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
 }
 
 .settings-row-grid {

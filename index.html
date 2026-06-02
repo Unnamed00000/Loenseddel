@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=23">
+    <link rel="stylesheet" href="styles.css?v=24">
   </head>
   <body>
     <div class="app-shell">
@@ -233,8 +233,8 @@
             <button class="settings-close" id="settingsClose" type="button" aria-label="Закрыть" title="Закрыть" data-i18n-aria-label="close" data-i18n-title="close">×</button>
           </div>
 
-          <section class="settings-card">
-            <h3><span aria-hidden="true">🌍</span><span data-i18n="language">Язык</span></h3>
+          <details class="settings-card">
+            <summary><span aria-hidden="true">🌍</span><span data-i18n="language">Язык</span></summary>
             <div class="settings-row-grid">
               <label class="language-picker">
                 <span data-i18n="language">Язык</span>
@@ -256,10 +256,10 @@
                 </select>
               </label>
             </div>
-          </section>
+          </details>
 
-          <section class="settings-card">
-            <h3><span aria-hidden="true">📲</span><span data-i18n="installSection">Установка и доступ</span></h3>
+          <details class="settings-card">
+            <summary><span aria-hidden="true">📲</span><span data-i18n="installSection">Установка и доступ</span></summary>
             <button class="primary-button compact" id="androidInstallButton" type="button" data-i18n="installAndroid">Установить на Android</button>
             <p class="settings-note" id="installStatus" data-i18n="androidInstallHint">На Android кнопка откроет установку, если браузер поддерживает PWA.</p>
             <details class="install-details">
@@ -271,10 +271,10 @@
                 <li data-i18n="iphoneStep4">Нажмите «Добавить».</li>
               </ol>
             </details>
-          </section>
+          </details>
 
-          <section class="settings-card">
-            <h3><span aria-hidden="true">🔊</span><span data-i18n="soundVibration">Звук и вибрация</span></h3>
+          <details class="settings-card">
+            <summary><span aria-hidden="true">🔊</span><span data-i18n="soundVibration">Звук и вибрация</span></summary>
             <label class="switch-row">
               <span data-i18n="sound">Звук</span>
               <input class="switch-input" id="soundEnabled" type="checkbox">
@@ -289,10 +289,10 @@
               <button class="text-button settings-test-button" id="testSoundButton" type="button" data-i18n="testSound">Проверить звук</button>
               <button class="text-button settings-test-button" id="testVibrationButton" type="button" data-i18n="testVibration">Проверить вибрацию</button>
             </div>
-          </section>
+          </details>
 
-          <section class="settings-card">
-            <h3><span aria-hidden="true">🎨</span><span data-i18n="theme">Тема</span></h3>
+          <details class="settings-card">
+            <summary><span aria-hidden="true">🎨</span><span data-i18n="appearance">Внешний вид</span></summary>
             <label class="theme-toggle">
               <span data-i18n="lightTheme">Светлая</span>
               <input id="themeToggle" type="checkbox">
@@ -301,10 +301,10 @@
               </span>
               <span data-i18n="darkTheme">Тёмная</span>
             </label>
-          </section>
+          </details>
 
-          <details class="settings-card" open>
-            <summary><span aria-hidden="true">🧾</span><span data-i18n="settings">Настройки</span></summary>
+          <details class="settings-card">
+            <summary><span aria-hidden="true">🧾</span><span data-i18n="salaryTax">Зарплата и налог</span></summary>
             <div class="settings-grid">
               <label>
                 <span data-i18n="defaultRate">Базовая ставка, kr/час</span>
@@ -356,18 +356,18 @@
 
           <div class="about-settings settings-card">
             <h2><span aria-hidden="true">ⓘ</span><span data-i18n="aboutApp">О приложении</span></h2>
-            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.7</strong></p>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.8</strong></p>
             <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
           </div>
         </section>
       </main>
       <footer class="app-footer">
         <h2 data-i18n="aboutApp">О приложении</h2>
-        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.7</strong></p>
+        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.8</strong></p>
         <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
       </footer>
     </div>
 
-    <script src="app.js?v=23"></script>
+    <script src="app.js?v=24"></script>
   </body>
 </html>

@@ -135,6 +135,8 @@ const translations = {
     vibration: "Вибрация",
     testSound: "Проверить звук",
     testVibration: "Проверить вибрацию",
+    appearance: "Внешний вид",
+    salaryTax: "Зарплата и налог",
     theme: "Тема",
     lightTheme: "Светлая",
     darkTheme: "Тёмная",
@@ -258,6 +260,8 @@ const translations = {
     vibration: "Vibration",
     testSound: "Test sound",
     testVibration: "Test vibration",
+    appearance: "Appearance",
+    salaryTax: "Pay and tax",
     theme: "Theme",
     lightTheme: "Light",
     darkTheme: "Dark",
@@ -381,6 +385,8 @@ const translations = {
     vibration: "Vibration",
     testSound: "Test lyd",
     testVibration: "Test vibration",
+    appearance: "Udseende",
+    salaryTax: "Løn og skat",
     theme: "Tema",
     lightTheme: "Lys",
     darkTheme: "Mørk",
@@ -507,6 +513,8 @@ translations.ka = {
   vibration: "ვიბრაცია",
   testSound: "ხმის შემოწმება",
   testVibration: "ვიბრაციის შემოწმება",
+  appearance: "გარეგნობა",
+  salaryTax: "ხელფასი და გადასახადი",
   theme: "თემა",
   lightTheme: "ღია",
   darkTheme: "მუქი",
@@ -856,7 +864,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v23 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v24 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1203,10 +1211,7 @@ function setDefaultPayRange() {
 }
 
 function renderAll() {
-  if (els.adminPanel && els.settingsPanel && !els.settingsPanel.contains(els.adminPanel)) {
-    const about = document.querySelector(".about-settings");
-    els.settingsPanel.insertBefore(els.adminPanel, about);
-  }
+  if (els.adminPanel) els.adminPanel.hidden = true;
   applyLanguage();
   applyTheme();
   renderSettings();
@@ -1375,7 +1380,7 @@ els.testVibrationButton.addEventListener("click", () => {
 
 function openSettingsPage() {
   els.settingsPanel.removeAttribute("hidden");
-  els.adminPanel.removeAttribute("hidden");
+  if (els.adminPanel) els.adminPanel.hidden = true;
   els.settingsToggle.setAttribute("aria-expanded", "true");
   document.body.classList.add("settings-mode");
   window.scrollTo({ top: 0, behavior: "auto" });
