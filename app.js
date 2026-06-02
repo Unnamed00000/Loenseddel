@@ -8,17 +8,27 @@ const defaults = {
   settings: {
     language: "ru",
     currency: "DKK",
+    payMode: "hourly",
     defaultRate: 160,
+    dailyRate: 0,
     sickRate: 160,
+    sickDailyRate: 0,
     holidayPercent: 12.5,
+    taxFreeAllowance: 0,
     amPercent: 8,
     taxPercent: 37,
     fixedDeduction: 0,
+    atpContribution: 0,
+    employeePensionPercent: 0,
+    employerPensionPercent: 0,
+    personnelFee: 0,
     eveningRate: 0,
     nightRate: 0,
     weekendRate: 0,
     overtimePercent: 50,
     localRate: 0,
+    qualificationAddonRate: 0,
+    stabilityAddonRate: 0,
     soundEnabled: true,
     vibrationEnabled: true,
     theme: "light"
@@ -107,11 +117,21 @@ const els = {
   amPercent: document.querySelector("#amPercent"),
   taxPercent: document.querySelector("#taxPercent"),
   fixedDeduction: document.querySelector("#fixedDeduction"),
+  payMode: document.querySelector("#payMode"),
+  dailyRate: document.querySelector("#dailyRate"),
+  sickDailyRate: document.querySelector("#sickDailyRate"),
+  taxFreeAllowance: document.querySelector("#taxFreeAllowance"),
+  atpContribution: document.querySelector("#atpContribution"),
+  employeePensionPercent: document.querySelector("#employeePensionPercent"),
+  employerPensionPercent: document.querySelector("#employerPensionPercent"),
+  personnelFee: document.querySelector("#personnelFee"),
   eveningRate: document.querySelector("#eveningRate"),
   nightRate: document.querySelector("#nightRate"),
   weekendRate: document.querySelector("#weekendRate"),
   overtimePercent: document.querySelector("#overtimePercent"),
-  localRate: document.querySelector("#localRate")
+  localRate: document.querySelector("#localRate"),
+  qualificationAddonRate: document.querySelector("#qualificationAddonRate"),
+  stabilityAddonRate: document.querySelector("#stabilityAddonRate")
 };
 
 const translations = {
@@ -137,6 +157,18 @@ const translations = {
     testVibration: "Проверить вибрацию",
     appearance: "Внешний вид",
     salaryTax: "Зарплата и налог",
+    payMode: "Тип оплаты",
+    hourlyPayMode: "Почасовая",
+    dailyPayMode: "Дневная",
+    dailyRate: "Дневная ставка",
+    sickDailyRate: "Больничные за день",
+    taxFreeAllowance: "Skattefradrag / fradrag",
+    atpContribution: "ATP-bidrag",
+    employeePensionPercent: "Пенсия работника, %",
+    employerPensionPercent: "Пенсия работодателя, %",
+    personnelFee: "Personaleforening / удержание",
+    qualificationAddonRate: "Kvalifikationstillæg",
+    stabilityAddonRate: "Stabilitetstillæg",
     theme: "Тема",
     lightTheme: "Светлая",
     darkTheme: "Тёмная",
@@ -262,6 +294,18 @@ const translations = {
     testVibration: "Test vibration",
     appearance: "Appearance",
     salaryTax: "Pay and tax",
+    payMode: "Pay type",
+    hourlyPayMode: "Hourly",
+    dailyPayMode: "Daily",
+    dailyRate: "Daily rate",
+    sickDailyRate: "Sick pay per day",
+    taxFreeAllowance: "Tax allowance / fradrag",
+    atpContribution: "ATP contribution",
+    employeePensionPercent: "Employee pension, %",
+    employerPensionPercent: "Employer pension, %",
+    personnelFee: "Staff association / deduction",
+    qualificationAddonRate: "Qualification add-on",
+    stabilityAddonRate: "Stability add-on",
     theme: "Theme",
     lightTheme: "Light",
     darkTheme: "Dark",
@@ -387,6 +431,18 @@ const translations = {
     testVibration: "Test vibration",
     appearance: "Udseende",
     salaryTax: "Løn og skat",
+    payMode: "Løntype",
+    hourlyPayMode: "Timeløn",
+    dailyPayMode: "Dagløn",
+    dailyRate: "Dagssats",
+    sickDailyRate: "Sygeløn pr. dag",
+    taxFreeAllowance: "Skattefradrag / fradrag",
+    atpContribution: "ATP-bidrag",
+    employeePensionPercent: "Medarbejderpension, %",
+    employerPensionPercent: "Arbejdsgiverpension, %",
+    personnelFee: "Personaleforening / fradrag",
+    qualificationAddonRate: "Kvalifikationstillæg",
+    stabilityAddonRate: "Stabilitetstillæg",
     theme: "Tema",
     lightTheme: "Lys",
     darkTheme: "Mørk",
@@ -515,6 +571,18 @@ translations.ka = {
   testVibration: "ვიბრაციის შემოწმება",
   appearance: "გარეგნობა",
   salaryTax: "ხელფასი და გადასახადი",
+  payMode: "გადახდის ტიპი",
+  hourlyPayMode: "საათობრივი",
+  dailyPayMode: "დღიური",
+  dailyRate: "დღიური ტარიფი",
+  sickDailyRate: "ავადმყოფობის დღიური",
+  taxFreeAllowance: "საგადასახადო შეღავათი / fradrag",
+  atpContribution: "ATP შენატანი",
+  employeePensionPercent: "თანამშრომლის პენსია, %",
+  employerPensionPercent: "დამსაქმებლის პენსია, %",
+  personnelFee: "პერსონალის გაერთიანება / დაქვითვა",
+  qualificationAddonRate: "კვალიფიკაციის დანამატი",
+  stabilityAddonRate: "სტაბილურობის დანამატი",
   theme: "თემა",
   lightTheme: "ღია",
   darkTheme: "მუქი",
@@ -765,17 +833,27 @@ function getSettingsFromInputs() {
   return {
     language: state.settings.language || "ru",
     currency: els.currencySelect.value || "DKK",
+    payMode: els.payMode.value || "hourly",
     defaultRate: numberValue("defaultRate"),
+    dailyRate: numberValue("dailyRate"),
     sickRate: numberValue("sickRate"),
+    sickDailyRate: numberValue("sickDailyRate"),
     holidayPercent: numberValue("holidayPercent"),
+    taxFreeAllowance: numberValue("taxFreeAllowance"),
     amPercent: numberValue("amPercent"),
     taxPercent: numberValue("taxPercent"),
     fixedDeduction: numberValue("fixedDeduction"),
+    atpContribution: numberValue("atpContribution"),
+    employeePensionPercent: numberValue("employeePensionPercent"),
+    employerPensionPercent: numberValue("employerPensionPercent"),
+    personnelFee: numberValue("personnelFee"),
     eveningRate: numberValue("eveningRate"),
     nightRate: numberValue("nightRate"),
     weekendRate: numberValue("weekendRate"),
     overtimePercent: numberValue("overtimePercent"),
     localRate: numberValue("localRate"),
+    qualificationAddonRate: numberValue("qualificationAddonRate"),
+    stabilityAddonRate: numberValue("stabilityAddonRate"),
     soundEnabled: els.soundEnabled.checked,
     vibrationEnabled: els.vibrationEnabled.checked,
     theme: els.themeToggle.checked ? "dark" : "light"
@@ -797,23 +875,28 @@ function calculateShift(shift, settings = state.settings) {
   const breakMinutes = Number(shift.breakMinutes ?? shift.break ?? shift.pauseMinutes) || 0;
   const minutes = Math.max(0, end - start - breakMinutes);
   const hours = minutes / 60;
+  const isDaily = settings.payMode === "daily";
   if (shift.dayType === "sick") {
     const sickRate = Number(shift.sickRate) || settings.sickRate || settings.defaultRate;
-    return { hours, gross: hours * sickRate };
+    const sickDaily = Number(settings.sickDailyRate) || Number(settings.dailyRate) || hours * sickRate;
+    return { hours, gross: isDaily ? sickDaily : hours * sickRate };
   }
   const rate = Number(shift.hourlyRate ?? shift.rate ?? shift.wage) || settings.defaultRate;
+  const baseGross = isDaily ? Number(settings.dailyRate) || hours * rate : hours * rate;
   const addonRate =
     (shift.eveningAddon ? settings.eveningRate : 0) +
     (shift.nightAddon ? settings.nightRate : 0) +
     (shift.weekendAddon ? settings.weekendRate : 0) +
-    (shift.localAddon ? settings.localRate : 0);
+    (shift.localAddon ? settings.localRate : 0) +
+    Number(settings.qualificationAddonRate || 0) +
+    Number(settings.stabilityAddonRate || 0);
   const customAddonTotal = state.customAddons.reduce((sum, addon) => {
     if (!shift.customAddons?.[addon.id]) return sum;
     const value = Number(addon.value) || 0;
     return sum + (addon.type === "percent" ? rate * (value / 100) : value);
   }, 0);
   const overtime = shift.overtimeAddon ? rate * (settings.overtimePercent / 100) : 0;
-  return { hours, gross: hours * (rate + addonRate + customAddonTotal + overtime) };
+  return { hours, gross: baseGross + hours * (addonRate + customAddonTotal + overtime) };
 }
 
 function calculateAllSavedShifts() {
@@ -837,10 +920,14 @@ function calculateNet(gross) {
     const value = Number(deduction.value) || 0;
     return sum + (deduction.type === "percent" ? gross * (value / 100) : value);
   }, 0);
-  const afterFixed = Math.max(0, gross - state.settings.fixedDeduction - customDeductions);
+  const employeePension = gross * ((Number(state.settings.employeePensionPercent) || 0) / 100);
+  const atp = Number(state.settings.atpContribution) || 0;
+  const personnelFee = Number(state.settings.personnelFee) || 0;
+  const afterFixed = Math.max(0, gross - employeePension - atp - personnelFee - state.settings.fixedDeduction - customDeductions);
   const am = afterFixed * (state.settings.amPercent / 100);
   const taxable = Math.max(0, afterFixed - am);
-  const tax = taxable * (state.settings.taxPercent / 100);
+  const taxableAfterAllowance = Math.max(0, taxable - (Number(state.settings.taxFreeAllowance) || 0));
+  const tax = taxableAfterAllowance * (state.settings.taxPercent / 100);
   return Math.max(0, taxable - tax);
 }
 
@@ -864,7 +951,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v25 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v26 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 

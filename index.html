@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
-    <link rel="stylesheet" href="styles.css?v=25">
+    <link rel="stylesheet" href="styles.css?v=26">
   </head>
   <body>
     <div class="app-shell">
@@ -249,16 +249,35 @@
             <summary><span aria-hidden="true">🧾</span><span data-i18n="salaryTax">Зарплата и налог</span></summary>
             <div class="settings-grid">
               <label>
+                <span data-i18n="payMode">Тип оплаты</span>
+                <select id="payMode">
+                  <option value="hourly" data-i18n="hourlyPayMode">Почасовая</option>
+                  <option value="daily" data-i18n="dailyPayMode">Дневная</option>
+                </select>
+              </label>
+              <label>
                 <span data-i18n="defaultRate">Базовая ставка, kr/час</span>
                 <input id="defaultRate" type="number" min="0" step="0.01" inputmode="decimal" value="160">
+              </label>
+              <label>
+                <span data-i18n="dailyRate">Дневная ставка</span>
+                <input id="dailyRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
               </label>
               <label>
                 <span data-i18n="sickRate">Больничные, kr/час</span>
                 <input id="sickRate" type="number" min="0" step="0.01" inputmode="decimal" value="160">
               </label>
               <label>
+                <span data-i18n="sickDailyRate">Больничные за день</span>
+                <input id="sickDailyRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+              </label>
+              <label>
                 <span data-i18n="feriepengeRate">Feriepenge, %</span>
                 <input id="holidayPercent" type="number" min="0" step="0.1" inputmode="decimal" value="12.5">
+              </label>
+              <label>
+                <span data-i18n="taxFreeAllowance">Skattefradrag / fradrag</span>
+                <input id="taxFreeAllowance" type="number" min="0" step="0.01" inputmode="decimal" value="0">
               </label>
               <label>
                 AM-bidrag, %
@@ -271,6 +290,22 @@
               <label>
                 <span data-i18n="fixedDeduction">ATP/пенсия за месяц, kr</span>
                 <input id="fixedDeduction" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+              </label>
+              <label>
+                <span data-i18n="atpContribution">ATP-bidrag</span>
+                <input id="atpContribution" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+              </label>
+              <label>
+                <span data-i18n="employeePensionPercent">Пенсия работника, %</span>
+                <input id="employeePensionPercent" type="number" min="0" step="0.1" inputmode="decimal" value="0">
+              </label>
+              <label>
+                <span data-i18n="employerPensionPercent">Пенсия работодателя, %</span>
+                <input id="employerPensionPercent" type="number" min="0" step="0.1" inputmode="decimal" value="0">
+              </label>
+              <label>
+                <span data-i18n="personnelFee">Personaleforening / удержание</span>
+                <input id="personnelFee" type="number" min="0" step="0.01" inputmode="decimal" value="0">
               </label>
               <label>
                 <span data-i18n="eveningRate">Вечерняя, kr/час</span>
@@ -292,24 +327,32 @@
                 <span data-i18n="localRate">Lokal-/особая, kr/час</span>
                 <input id="localRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
               </label>
+              <label>
+                <span data-i18n="qualificationAddonRate">Kvalifikationstillæg</span>
+                <input id="qualificationAddonRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+              </label>
+              <label>
+                <span data-i18n="stabilityAddonRate">Stabilitetstillæg</span>
+                <input id="stabilityAddonRate" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+              </label>
             </div>
             <p class="hint" data-i18n="taxHint">Датские налоги зависят от налоговой карты, fradrag, коммуны, пенсии и договора. Здесь расчёт примерный: брутто → AM-bidrag → A-skat.</p>
           </details>
 
           <div class="about-settings settings-card">
             <h2><span aria-hidden="true">ⓘ</span><span data-i18n="aboutApp">О приложении</span></h2>
-            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.9</strong></p>
+            <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.10</strong></p>
             <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
           </div>
         </section>
       </main>
       <footer class="app-footer">
         <h2 data-i18n="aboutApp">О приложении</h2>
-        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.9</strong></p>
+        <p><span data-i18n="versionLabel">Версия</span>: <strong>1.0.10</strong></p>
         <p><span data-i18n="developerLabel">Разработчик</span>: <strong>Adam Margoev 2026</strong></p>
       </footer>
     </div>
 
-    <script src="app.js?v=25"></script>
+    <script src="app.js?v=26"></script>
   </body>
 </html>
