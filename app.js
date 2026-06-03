@@ -879,14 +879,29 @@ function calendarHoursText(hours) {
   return `${new Intl.NumberFormat(activeLocale(), { maximumFractionDigits: 1 }).format(hours || 0)}${tr("hourShort")}`;
 }
 
+function calendarCurrencyText() {
+  return {
+    DKK: "kr",
+    GEL: "₾",
+    USD: "$",
+    EUR: "€",
+    RUB: "₽"
+  }[state.settings.currency || "DKK"] || state.settings.currency || "";
+}
+
 function calendarMoney(value) {
   const amount = Math.round(Number(value) || 0);
-  const currency = state.settings.currency || "DKK";
+  const currency = calendarCurrencyText();
   if (Math.abs(amount) >= 1000) {
     const compact = Math.round((amount / 1000) * 10) / 10;
-    return `${new Intl.NumberFormat(activeLocale(), { maximumFractionDigits: 1 }).format(compact)}k ${currency}`;
+    return `${new Intl.NumberFormat(activeLocale(), { maximumFractionDigits: 1 }).format(compact)}k${currency}`;
   }
-  return `${new Intl.NumberFormat(activeLocale(), { maximumFractionDigits: 0 }).format(amount)} ${currency}`;
+  return `${new Intl.NumberFormat(activeLocale(), { maximumFractionDigits: 0 }).format(amount)}${currency}`;
+}
+
+function calendarDayTypeText(shift) {
+  const label = shift?.dayType === "sick" ? tr("sickShort") : tr("workShort");
+  return [...label.trim()][0] || "";
 }
 
 function numberValue(id) {
@@ -1354,7 +1369,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v35 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v36 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1615,7 +1630,7 @@ function renderCalendar() {
     const weekBadge = day.getDay() === 1 ? `<span class="week-number">W${isoWeekNumber(day)}</span>` : "";
     const dayMeta = shift
       ? `<span class="day-meta">
-          <span class="day-meta-part">${shift.dayType === "sick" ? tr("sickShort") : tr("workShort")}</span>
+          <span class="day-meta-part">${calendarDayTypeText(shift)}</span>
           <span class="day-meta-part">${calendarHoursText(calc.hours)}</span>
           <span class="day-meta-part day-meta-pay">${calendarMoney(calc.gross)}</span>
         </span>`
