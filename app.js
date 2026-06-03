@@ -906,6 +906,8 @@ function numbersFromText(text) {
 }
 
 function pickHourlyRate(numbers) {
+  const preferred = numbers.filter((value) => value >= 90 && value <= 260);
+  if (preferred.length) return preferred[0];
   const rates = numbers.filter((value) => value >= 50 && value <= 500);
   if (rates.length >= 2) return rates[rates.length - 1];
   if (rates.length === 1) return rates[0];
@@ -956,6 +958,12 @@ function findPayrollLine(lines, patterns, rejectPatterns = []) {
   }) || "";
 }
 
+function findPayrollContext(lines, patterns, rejectPatterns = []) {
+  const index = lines.findIndex((line) => payrollPatternMatches(line, patterns) && !payrollPatternMatches(line, rejectPatterns));
+  if (index < 0) return "";
+  return lines.slice(Math.max(0, index - 1), Math.min(lines.length, index + 4)).join(" ");
+}
+
 function setDetectedValue(target, key, value) {
   if (!Number.isFinite(value) || value < 0) return;
   target[key] = Math.round(value * 100) / 100;
@@ -972,10 +980,10 @@ function detectPayrollSettings(text) {
     .filter(Boolean);
   const detected = {};
 
-  const hourlyLine = findPayrollLine(lines, [/timeløn/, /time.*løn/, /grundløn/, /timelon/, /timeloen/, /time.*lon/, /grundlon/, /grundloen/, /normal.*lon/], [/uden løn/, /uden.*lon/, /nettoløn/, /nettolon/]);
+  const hourlyLine = findPayrollContext(lines, [/timeløn/, /time.*løn/, /grundløn/, /timelon/, /timeloen/, /time.*lon/, /grundlon/, /grundloen/, /normal.*lon/], [/uden løn/, /uden.*lon/, /nettoløn/, /nettolon/]);
   setDetectedValue(detected, "defaultRate", pickHourlyRate(numbersFromText(hourlyLine)));
 
-  const sickLine = findPayrollLine(lines, [/syg.*løn/, /syg.*lon/, /sygedagpenge/, /sick.*pay/], [/uden løn/, /uden.*lon/]);
+  const sickLine = findPayrollContext(lines, [/syg.*løn/, /syg.*lon/, /sygedagpenge/, /sick.*pay/], [/uden løn/, /uden.*lon/]);
   setDetectedValue(detected, "sickRate", pickHourlyRate(numbersFromText(sickLine)));
 
   const holidayLine = findPayrollLine(lines, [/feriepengeopsparing/, /feriepenge/, /holiday.*pay/], [/nettoferiepenge/, /netto.*ferie/]);
@@ -1042,6 +1050,8 @@ function settingLabel(key) {
 
 function applyPayrollSettings(detected) {
   const applied = [];
+  const oldDefaultRate = Number(state.settings.defaultRate) || 0;
+  const oldSickRate = Number(state.settings.sickRate) || 0;
   Object.entries(detected).forEach(([key, value]) => {
     if (!els[key] || !Number.isFinite(value)) return;
     els[key].value = formatInputNumber(value);
@@ -1051,6 +1061,18 @@ function applyPayrollSettings(detected) {
   if (!applied.length) return applied;
   saveState();
   renderSettings();
+  if (Number.isFinite(detected.defaultRate)) {
+    const currentRate = numberValue("hourlyRate");
+    if (!state.shifts[selectedDate] || !currentRate || currentRate === oldDefaultRate) {
+      els.hourlyRate.value = formatInputNumber(detected.defaultRate);
+    }
+  }
+  if (Number.isFinite(detected.sickRate)) {
+    const currentRate = numberValue("hourlyRate");
+    if (els.dayType.value === "sick" && (!currentRate || currentRate === oldSickRate)) {
+      els.hourlyRate.value = formatInputNumber(detected.sickRate);
+    }
+  }
   renderSummary();
   renderCalendar();
   renderShiftPreview();
@@ -1063,6 +1085,21 @@ function payrollTextPreview(text) {
     .map((line) => line.replace(/\s+/g, " ").trim())
     .filter((line) => line.length > 2);
   return (lines.slice(0, 6).join(" | ") || "-").slice(0, 260);
+}
+
+function groupPdfTextItems(items) {
+  return items.reduce((groups, item) => {
+    const y = item.transform?.[5] || 0;
+    const x = item.transform?.[4] || 0;
+    let group = groups.find((entry) => Math.abs(entry.y - y) <= 3);
+    if (!group) {
+      group = { y, parts: [] };
+      groups.push(group);
+    }
+    group.parts.push({ x, text: item.str });
+    group.y = (group.y * (group.parts.length - 1) + y) / group.parts.length;
+    return groups;
+  }, []);
 }
 
 function bytesToBinary(bytes) {
@@ -1153,16 +1190,10 @@ async function extractPdfTextWithPdfJs(arrayBuffer) {
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
     const page = await pdf.getPage(pageNumber);
     const content = await page.getTextContent();
-    const lines = new Map();
-    content.items.forEach((item) => {
-      const y = Math.round(item.transform?.[5] || 0);
-      if (!lines.has(y)) lines.set(y, []);
-      lines.get(y).push({ x: item.transform?.[4] || 0, text: item.str });
-    });
     pages.push(
-      [...lines.entries()]
-        .sort(([a], [b]) => b - a)
-        .map(([, parts]) => parts.sort((a, b) => a.x - b.x).map((part) => part.text).join(" "))
+      groupPdfTextItems(content.items)
+        .sort((a, b) => b.y - a.y)
+        .map((line) => line.parts.sort((a, b) => a.x - b.x).map((part) => part.text).join(" "))
         .join("\n")
     );
   }
@@ -1309,7 +1340,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v32 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v33 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
