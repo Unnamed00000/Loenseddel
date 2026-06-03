@@ -179,7 +179,7 @@ h2 {
   position: relative;
   display: flex;
   min-height: 86px;
-  padding: 8px;
+  padding: 7px;
   border: 1px solid var(--line);
   border-radius: 7px;
   background: #fbf7ef;
@@ -235,7 +235,9 @@ body.theme-dark .day-button.is-sick {
 }
 
 .day-number {
+  font-size: 0.92rem;
   font-weight: 800;
+  line-height: 1;
 }
 
 .week-number {
@@ -260,11 +262,30 @@ body.theme-dark .day-button.is-sick {
 }
 
 .day-meta {
+  display: flex;
   width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 3px;
   color: var(--accent);
-  font-size: 0.78rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.58rem;
   font-weight: 700;
-  overflow-wrap: anywhere;
+  line-height: 1;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.day-meta-part {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.day-meta-pay {
+  flex-shrink: 0;
 }
 
 body.theme-dark .day-meta {
@@ -1104,11 +1125,25 @@ summary::-webkit-details-marker {
 
   .day-button {
     min-height: 62px;
-    padding: 6px;
+    padding: 5px 4px;
+  }
+
+  .day-number {
+    font-size: 0.78rem;
+  }
+
+  .week-number {
+    top: 3px;
+    right: 3px;
+    min-width: 16px;
+    max-width: 22px;
+    padding: 1px 2px;
+    font-size: 0.45rem;
   }
 
   .day-meta {
-    font-size: 0.68rem;
+    gap: 2px;
+    font-size: 0.49rem;
   }
 
   .time-row,

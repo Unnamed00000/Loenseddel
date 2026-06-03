@@ -875,6 +875,20 @@ function hoursText(hours) {
   return `${new Intl.NumberFormat(activeLocale(), { maximumFractionDigits: 2 }).format(hours || 0)} ${tr("hourShort")}`;
 }
 
+function calendarHoursText(hours) {
+  return `${new Intl.NumberFormat(activeLocale(), { maximumFractionDigits: 1 }).format(hours || 0)}${tr("hourShort")}`;
+}
+
+function calendarMoney(value) {
+  const amount = Math.round(Number(value) || 0);
+  const currency = state.settings.currency || "DKK";
+  if (Math.abs(amount) >= 1000) {
+    const compact = Math.round((amount / 1000) * 10) / 10;
+    return `${new Intl.NumberFormat(activeLocale(), { maximumFractionDigits: 1 }).format(compact)}k ${currency}`;
+  }
+  return `${new Intl.NumberFormat(activeLocale(), { maximumFractionDigits: 0 }).format(amount)} ${currency}`;
+}
+
 function numberValue(id) {
   return Number.parseFloat(els[id].value) || 0;
 }
@@ -1340,7 +1354,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v34 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v35 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1599,10 +1613,17 @@ function renderCalendar() {
     if (shift) button.classList.add("has-shift");
     if (shift?.dayType === "sick") button.classList.add("is-sick");
     const weekBadge = day.getDay() === 1 ? `<span class="week-number">W${isoWeekNumber(day)}</span>` : "";
+    const dayMeta = shift
+      ? `<span class="day-meta">
+          <span class="day-meta-part">${shift.dayType === "sick" ? tr("sickShort") : tr("workShort")}</span>
+          <span class="day-meta-part">${calendarHoursText(calc.hours)}</span>
+          <span class="day-meta-part day-meta-pay">${calendarMoney(calc.gross)}</span>
+        </span>`
+      : "";
     button.innerHTML = `
       ${weekBadge}
       <span class="day-number">${day.getDate()}</span>
-      <span class="day-meta">${shift ? `${shift.dayType === "sick" ? tr("sickShort") : tr("workShort")} · ${hoursText(calc.hours)} · ${money(calc.gross)}` : ""}</span>
+      ${dayMeta}
     `;
     button.addEventListener("click", () => selectDate(iso));
     els.calendarGrid.append(button);
