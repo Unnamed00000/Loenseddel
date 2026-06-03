@@ -1340,7 +1340,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v33 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v34 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1598,7 +1598,7 @@ function renderCalendar() {
     if (iso === selectedDate) button.classList.add("is-selected");
     if (shift) button.classList.add("has-shift");
     if (shift?.dayType === "sick") button.classList.add("is-sick");
-    const weekBadge = day.getDay() === 1 ? `<span class="week-number">${tr("weekShort")} ${isoWeekNumber(day)}</span>` : "";
+    const weekBadge = day.getDay() === 1 ? `<span class="week-number">W${isoWeekNumber(day)}</span>` : "";
     button.innerHTML = `
       ${weekBadge}
       <span class="day-number">${day.getDate()}</span>
