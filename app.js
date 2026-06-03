@@ -181,6 +181,7 @@ const translations = {
     payPdfReading: "Читаю PDF...",
     payPdfNoText: "Не удалось прочитать текст из PDF. Если это скан или фото, нужен OCR.",
     payPdfNoValues: "Текст прочитан, но нужные ставки и налоги не найдены. Проверьте PDF или заполните поля вручную.",
+    payPdfReadDebug: "Прочитано: {chars} символов. Пример текста: {sample}",
     payPdfApplied: "Из PDF применено полей: {count}. {fields}",
     payPdfError: "Не удалось разобрать PDF. Попробуйте другой файл или заполните поля вручную.",
     theme: "Тема",
@@ -327,6 +328,7 @@ const translations = {
     payPdfReading: "Reading PDF...",
     payPdfNoText: "Could not read text from the PDF. If it is a scan or photo, OCR is needed.",
     payPdfNoValues: "Text was read, but no useful rates or tax values were found. Check the PDF or fill the fields manually.",
+    payPdfReadDebug: "Read: {chars} characters. Text sample: {sample}",
     payPdfApplied: "Applied fields from PDF: {count}. {fields}",
     payPdfError: "Could not parse the PDF. Try another file or fill the fields manually.",
     theme: "Theme",
@@ -473,6 +475,7 @@ const translations = {
     payPdfReading: "Læser PDF...",
     payPdfNoText: "Kunne ikke læse tekst fra PDF'en. Hvis den er en scanning eller et foto, kræves OCR.",
     payPdfNoValues: "Teksten blev læst, men der blev ikke fundet brugbare satser eller skatteværdier. Tjek PDF'en eller udfyld felterne manuelt.",
+    payPdfReadDebug: "Læst: {chars} tegn. Teksteksempel: {sample}",
     payPdfApplied: "Anvendte felter fra PDF: {count}. {fields}",
     payPdfError: "Kunne ikke analysere PDF'en. Prøv en anden fil eller udfyld felterne manuelt.",
     theme: "Tema",
@@ -622,6 +625,7 @@ translations.ka = {
   payPdfReading: "PDF იკითხება...",
   payPdfNoText: "PDF-დან ტექსტის წაკითხვა ვერ მოხერხდა. თუ ეს სკანი ან ფოტოა, საჭიროა OCR.",
   payPdfNoValues: "ტექსტი წაკითხულია, მაგრამ საჭირო ტარიფები და გადასახადები ვერ მოიძებნა. შეამოწმეთ PDF ან შეავსეთ ველები ხელით.",
+  payPdfReadDebug: "წაკითხულია: {chars} სიმბოლო. ტექსტის მაგალითი: {sample}",
   payPdfApplied: "PDF-დან გამოყენებული ველები: {count}. {fields}",
   payPdfError: "PDF-ის დამუშავება ვერ მოხერხდა. სცადეთ სხვა ფაილი ან შეავსეთ ველები ხელით.",
   theme: "თემა",
@@ -928,10 +932,27 @@ function pickPercent(line) {
   return likely ?? null;
 }
 
+function normalizePayrollLabel(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/æ/g, "ae")
+    .replace(/ø/g, "o")
+    .replace(/å/g, "a")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function payrollPatternMatches(line, patterns) {
+  const lower = String(line || "").toLowerCase();
+  const normalized = normalizePayrollLabel(line);
+  return patterns.some((pattern) => pattern.test(lower) || pattern.test(normalized));
+}
+
 function findPayrollLine(lines, patterns, rejectPatterns = []) {
   return lines.find((line) => {
-    const lower = line.toLowerCase();
-    return patterns.some((pattern) => pattern.test(lower)) && !rejectPatterns.some((pattern) => pattern.test(lower));
+    return payrollPatternMatches(line, patterns) && !payrollPatternMatches(line, rejectPatterns);
   }) || "";
 }
 
@@ -951,23 +972,23 @@ function detectPayrollSettings(text) {
     .filter(Boolean);
   const detected = {};
 
-  const hourlyLine = findPayrollLine(lines, [/timeløn/, /grundløn/], [/uden løn/, /nettoløn/]);
+  const hourlyLine = findPayrollLine(lines, [/timeløn/, /time.*løn/, /grundløn/, /timelon/, /timeloen/, /time.*lon/, /grundlon/, /grundloen/, /normal.*lon/], [/uden løn/, /uden.*lon/, /nettoløn/, /nettolon/]);
   setDetectedValue(detected, "defaultRate", pickHourlyRate(numbersFromText(hourlyLine)));
 
-  const sickLine = findPayrollLine(lines, [/syg.*løn/, /sygedagpenge/], [/uden løn/]);
+  const sickLine = findPayrollLine(lines, [/syg.*løn/, /syg.*lon/, /sygedagpenge/, /sick.*pay/], [/uden løn/, /uden.*lon/]);
   setDetectedValue(detected, "sickRate", pickHourlyRate(numbersFromText(sickLine)));
 
-  const holidayLine = findPayrollLine(lines, [/feriepengeopsparing/, /feriepenge/], [/nettoferiepenge/]);
+  const holidayLine = findPayrollLine(lines, [/feriepengeopsparing/, /feriepenge/, /holiday.*pay/], [/nettoferiepenge/, /netto.*ferie/]);
   setDetectedValue(detected, "holidayPercent", pickPercent(holidayLine));
 
-  const amLine = findPayrollLine(lines, [/am-bidrag/, /arbejdsmarkedsbidrag/]);
+  const amLine = findPayrollLine(lines, [/am-bidrag/, /am bidrag/, /arbejdsmarkedsbidrag/, /arbejdsmarkeds.*bidrag/]);
   setDetectedValue(detected, "amPercent", pickPercent(amLine));
 
-  const taxLine = findPayrollLine(lines, [/a-skat/, /trækprocent/, /traekprocent/, /træk%/, /traek%/]);
+  const taxLine = findPayrollLine(lines, [/a-skat/, /a skat/, /trækprocent/, /traekprocent/, /traekprocent/, /træk%/, /traek%/, /skattekort.*procent/]);
   const rawTax = pickPercent(taxLine);
   setDetectedValue(detected, "taxPercent", rawTax && rawTax <= 1 ? rawTax * 100 : rawTax);
 
-  const allowanceLine = findPayrollLine(lines, [/skattefradrag/, /anvendt.*fradrag/, /fradrag/], [/feriefradrag/]);
+  const allowanceLine = findPayrollLine(lines, [/skattefradrag/, /anvendt.*fradrag/, /fradrag/, /tax.*allowance/], [/feriefradrag/, /ferie.*fradrag/]);
   const allowanceNumbers = numbersFromText(allowanceLine).map((value) => Math.abs(value));
   const allowance = allowanceNumbers.filter((value) => value >= 100).sort((a, b) => b - a)[0];
   setDetectedValue(detected, "taxFreeAllowance", allowance);
@@ -975,25 +996,25 @@ function detectPayrollSettings(text) {
   const atpLine = findPayrollLine(lines, [/atp-bidrag/, /\batp\b/]);
   setDetectedValue(detected, "atpContribution", pickLineAmount(numbersFromText(atpLine)));
 
-  const employeePensionLine = findPayrollLine(lines, [/medarb.*pension/, /egen andel/, /medarbejder.*pension/]);
+  const employeePensionLine = findPayrollLine(lines, [/medarb.*pension/, /egen andel/, /medarbejder.*pension/, /employee.*pension/]);
   setDetectedValue(detected, "employeePensionPercent", pickPercent(employeePensionLine));
 
-  const employerPensionLine = findPayrollLine(lines, [/firma.*pension/, /arbejdsgiver.*pension/, /firmapension/]);
+  const employerPensionLine = findPayrollLine(lines, [/firma.*pension/, /arbejdsgiver.*pension/, /firmapension/, /employer.*pension/]);
   setDetectedValue(detected, "employerPensionPercent", pickPercent(employerPensionLine));
 
-  const personnelLine = findPayrollLine(lines, [/personaleforening/, /personale.*fradrag/, /personale.*udlæg/]);
+  const personnelLine = findPayrollLine(lines, [/personaleforening/, /personale.*fradrag/, /personale.*udlæg/, /personale.*udlaeg/, /staff.*deduction/]);
   setDetectedValue(detected, "personnelFee", pickLineAmount(numbersFromText(personnelLine)));
 
-  const localLine = findPayrollLine(lines, [/lokaltillæg/, /lokaltillaeg/, /lokal.*tillæg/, /lokal.*tillaeg/]);
+  const localLine = findPayrollLine(lines, [/lokaltillæg/, /lokaltillaeg/, /lokal.*tillæg/, /lokal.*tillaeg/, /local.*add/]);
   setDetectedValue(detected, "localRate", pickAddonRate(numbersFromText(localLine)));
 
-  const meetingLine = findPayrollLine(lines, [/mødetillæg/, /moedetillæg/, /mødetillaeg/, /moedetillaeg/, /møde.*tillæg/, /moede.*tillaeg/]);
+  const meetingLine = findPayrollLine(lines, [/mødetillæg/, /moedetillæg/, /mødetillaeg/, /moedetillaeg/, /møde.*tillæg/, /moede.*tillaeg/, /modetillaeg/, /mode.*tillaeg/, /fremmode.*tillaeg/, /attendance.*add/]);
   setDetectedValue(detected, "meetingAddonRate", pickAddonRate(numbersFromText(meetingLine)));
 
-  const qualificationLine = findPayrollLine(lines, [/kvalifikationstillæg/, /kvalifikationstillaeg/]);
+  const qualificationLine = findPayrollLine(lines, [/kvalifikationstillæg/, /kvalifikationstillaeg/, /kval.*tillæg/, /kval.*tillaeg/, /qualification.*add/]);
   setDetectedValue(detected, "qualificationAddonRate", pickAddonRate(numbersFromText(qualificationLine)));
 
-  const stabilityLine = findPayrollLine(lines, [/stabilitetstillæg/, /stabilitetstillaeg/]);
+  const stabilityLine = findPayrollLine(lines, [/stabilitetstillæg/, /stabilitetstillaeg/, /stabil.*tillæg/, /stabil.*tillaeg/, /stability.*add/]);
   setDetectedValue(detected, "stabilityAddonRate", pickAddonRate(numbersFromText(stabilityLine)));
 
   return detected;
@@ -1034,6 +1055,14 @@ function applyPayrollSettings(detected) {
   renderCalendar();
   renderShiftPreview();
   return applied;
+}
+
+function payrollTextPreview(text) {
+  const lines = String(text || "")
+    .split(/\n+/)
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter((line) => line.length > 2);
+  return (lines.slice(0, 6).join(" | ") || "-").slice(0, 260);
 }
 
 function bytesToBinary(bytes) {
@@ -1128,12 +1157,12 @@ async function extractPdfTextWithPdfJs(arrayBuffer) {
     content.items.forEach((item) => {
       const y = Math.round(item.transform?.[5] || 0);
       if (!lines.has(y)) lines.set(y, []);
-      lines.get(y).push(item.str);
+      lines.get(y).push({ x: item.transform?.[4] || 0, text: item.str });
     });
     pages.push(
       [...lines.entries()]
         .sort(([a], [b]) => b - a)
-        .map(([, parts]) => parts.join(" "))
+        .map(([, parts]) => parts.sort((a, b) => a.x - b.x).map((part) => part.text).join(" "))
         .join("\n")
     );
   }
@@ -1280,7 +1309,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v30 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v31 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1784,7 +1813,9 @@ els.payPdfFileInput?.addEventListener("change", async () => {
     giveFeedback(applied.length ? "success" : "delete");
     els.payPdfStatus.textContent = applied.length
       ? tr("payPdfApplied").replace("{count}", String(applied.length)).replace("{fields}", applied.join(", "))
-      : tr("payPdfNoValues");
+      : `${tr("payPdfNoValues")} ${tr("payPdfReadDebug")
+          .replace("{chars}", String(text.trim().length))
+          .replace("{sample}", payrollTextPreview(text))}`;
   } catch {
     els.payPdfStatus.textContent = tr("payPdfError");
   } finally {
