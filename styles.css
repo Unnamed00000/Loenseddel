@@ -277,6 +277,18 @@ body.theme-dark .day-button.is-sick {
   white-space: nowrap;
 }
 
+.day-type-chip {
+  display: block;
+  max-width: 100%;
+  color: var(--accent);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.47rem;
+  font-weight: 800;
+  line-height: 1;
+  overflow: visible;
+  white-space: nowrap;
+}
+
 .day-meta-part {
   flex: 0 0 auto;
   min-width: 0;
@@ -292,10 +304,12 @@ body.theme-dark .day-meta {
   color: #b9dfa9;
 }
 
+.day-button.is-sick .day-type-chip,
 .day-button.is-sick .day-meta {
   color: #a33529;
 }
 
+body.theme-dark .day-button.is-sick .day-type-chip,
 body.theme-dark .day-button.is-sick .day-meta {
   color: #f0a094;
 }
@@ -1145,6 +1159,11 @@ summary::-webkit-details-marker {
     gap: 1px;
     font-size: 0.36rem;
     font-weight: 750;
+  }
+
+  .day-type-chip {
+    font-size: 0.35rem;
+    font-weight: 850;
   }
 
   .time-row,

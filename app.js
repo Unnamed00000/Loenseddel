@@ -900,8 +900,7 @@ function calendarMoney(value) {
 }
 
 function calendarDayTypeText(shift) {
-  const label = shift?.dayType === "sick" ? tr("sickShort") : tr("workShort");
-  return [...label.trim()][0] || "";
+  return shift?.dayType === "sick" ? tr("sickShort") : tr("workShort");
 }
 
 function numberValue(id) {
@@ -1369,7 +1368,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v36 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v37 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
@@ -1629,8 +1628,8 @@ function renderCalendar() {
     if (shift?.dayType === "sick") button.classList.add("is-sick");
     const weekBadge = day.getDay() === 1 ? `<span class="week-number">W${isoWeekNumber(day)}</span>` : "";
     const dayMeta = shift
-      ? `<span class="day-meta">
-          <span class="day-meta-part">${calendarDayTypeText(shift)}</span>
+      ? `<span class="day-type-chip">${calendarDayTypeText(shift)}</span>
+        <span class="day-meta">
           <span class="day-meta-part">${calendarHoursText(calc.hours)}</span>
           <span class="day-meta-part day-meta-pay">${calendarMoney(calc.gross)}</span>
         </span>`

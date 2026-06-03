@@ -1,4 +1,4 @@
-const cacheName = "mit-arbejde-v36";
+const cacheName = "mit-arbejde-v37";
 const assets = [
   "./",
   "./index.html",
