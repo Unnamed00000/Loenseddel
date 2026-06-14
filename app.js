@@ -165,6 +165,8 @@ const translations = {
     salaryTax: "Зарплата и налог",
     payMode: "Løntype",
     hourlyPayMode: "Timeløn",
+    taxiPayMode: "Taxa timeløn",
+    fiftyFiftyPayMode: "Taxa 50/50",
     dailyPayMode: "Dagløn",
     dailyRate: "Dagløn",
     sickDailyRate: "Sygeløn pr. dag",
@@ -312,6 +314,8 @@ const translations = {
     salaryTax: "Pay and tax",
     payMode: "Løntype",
     hourlyPayMode: "Timeløn",
+    taxiPayMode: "Taxi hourly pay",
+    fiftyFiftyPayMode: "Taxi 50/50",
     dailyPayMode: "Dagløn",
     dailyRate: "Dagløn",
     sickDailyRate: "Sygeløn pr. dag",
@@ -459,6 +463,8 @@ const translations = {
     salaryTax: "Løn og skat",
     payMode: "Løntype",
     hourlyPayMode: "Timeløn",
+    taxiPayMode: "Taxa timeløn",
+    fiftyFiftyPayMode: "Taxa 50/50",
     dailyPayMode: "Dagløn",
     dailyRate: "Dagløn",
     sickDailyRate: "Sygeløn pr. dag",
@@ -609,6 +615,8 @@ translations.ka = {
   salaryTax: "ხელფასი და გადასახადი",
   payMode: "Løntype",
   hourlyPayMode: "Timeløn",
+  taxiPayMode: "ტაქსი საათობრივი",
+  fiftyFiftyPayMode: "ტაქსი 50/50",
   dailyPayMode: "Dagløn",
   dailyRate: "Dagløn",
   sickDailyRate: "Sygeløn pr. dag",
@@ -1291,10 +1299,12 @@ function calculateShift(shift, settings = state.settings) {
   const minutes = Math.max(0, end - start - breakMinutes);
   const hours = minutes / 60;
   const isDaily = settings.payMode === "daily";
+  const isFiftyFifty = settings.payMode === "fiftyFifty";
   if (shift.dayType === "sick") {
     const sickRate = Number(shift.sickRate) || settings.sickRate || settings.defaultRate;
     const sickDaily = Number(settings.sickDailyRate) || Number(settings.dailyRate) || hours * sickRate;
-    return { hours, gross: isDaily ? sickDaily : hours * sickRate };
+    const sickGross = isDaily ? sickDaily : hours * sickRate;
+    return { hours, gross: isFiftyFifty ? sickGross * 0.5 : sickGross };
   }
   const rate = Number(shift.hourlyRate ?? shift.rate ?? shift.wage) || settings.defaultRate;
   const baseGross = isDaily ? Number(settings.dailyRate) || hours * rate : hours * rate;
@@ -1312,7 +1322,8 @@ function calculateShift(shift, settings = state.settings) {
     return sum + (addon.type === "percent" ? rate * (value / 100) : value);
   }, 0);
   const overtime = shift.overtimeAddon ? rate * (settings.overtimePercent / 100) : 0;
-  return { hours, gross: baseGross + hours * (addonRate + customAddonTotal + overtime) };
+  const gross = baseGross + hours * (addonRate + customAddonTotal + overtime);
+  return { hours, gross: isFiftyFifty ? gross * 0.5 : gross };
 }
 
 function calculateAllSavedShifts() {
@@ -1368,7 +1379,7 @@ function renderSummary() {
   els.savedShiftCount.textContent = String(count);
   els.savedGrossText.textContent = money(total.gross);
   els.savedNetText.textContent = money(pay.net);
-  els.debugLine.textContent = `v38 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
+  els.debugLine.textContent = `v39 · ${tr("debugInfo")}: ${count} shifts · ${state.paySlips.length} payslips · ${money(total.gross)}`;
   renderSavedShiftList();
 }
 
